@@ -12,5 +12,4 @@
 
 # Reviewers
 
-- @gemini-code-assist
-  Please review this PR and provide feedback in Japanese.
+- @gemini-code-assist 日本語で Pull Request をレビュー
