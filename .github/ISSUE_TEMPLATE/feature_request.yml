@@ -1,5 +1,6 @@
 name: 💡 Feature Request
 description: Request a new feature.
+title: "💡 "
 labels: ["enhancement"]
 body:
   - type: markdown
@@ -8,18 +9,10 @@ body:
         Thank you for your feature suggestion. Please provide the following information.
 
   - type: textarea
-    id: description
+    id: feature-details
     attributes:
       label: Feature Description
       description: Please provide a detailed description of the feature.
       placeholder: Please be specific.
-    validations:
-      required: true
-
-  - type: textarea
-    id: expected
-    attributes:
-      label: Expected behavior
-      description: Please describe the expected behavior.
     validations:
       required: true

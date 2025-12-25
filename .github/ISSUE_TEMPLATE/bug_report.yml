@@ -1,5 +1,6 @@
 name: 🐛 Bug Report
 description: Report a bug.
+title: "🐛 "
 labels: ["bug"]
 body:
   - type: markdown
@@ -8,7 +9,7 @@ body:
         Thank you for reporting the bug. Please provide the following information.
 
   - type: textarea
-    id: details
+    id: bug-details
     attributes:
       label: Bug Description
       description: Please provide a detailed description of the bug.
