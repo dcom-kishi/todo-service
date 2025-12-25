@@ -1,7 +1,6 @@
 # Github リポジトリと gemini-code-assist セットアップ
 
-1. 以下にアクセスして `Install` を選択する
-https://github.com/marketplace/gemini-code-assist
+1. [こちら](https://github.com/marketplace/gemini-code-assist)にアクセスして `Install` を選択する
 
 2. `Complete order and begin installation` を選択する
 <img src="./images/github-gemini-code-assist-integration-01.png" width="50%">
