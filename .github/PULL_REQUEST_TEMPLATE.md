@@ -10,6 +10,6 @@
 
 - None
 
-# Reviewer
+# Reviewers
 
-- /gemini review
+- @gemini-code-assist 日本語で Pull Request をレビュー

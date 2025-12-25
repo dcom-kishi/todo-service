@@ -11,8 +11,16 @@ body:
   - type: textarea
     id: feature-details
     attributes:
-      label: Feature Description
+      label: Description
       description: Please provide a detailed description of the feature.
       placeholder: Please be specific.
+    validations:
+      required: true
+
+  - type: textarea
+    id: feature-goal
+    attributes:
+      label: Goal
+      description: Please describe the expected behavior.
     validations:
       required: true
