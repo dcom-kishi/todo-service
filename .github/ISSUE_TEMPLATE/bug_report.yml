@@ -1,0 +1,26 @@
+name: 🐛 Bug Report
+description: Report a bug.
+title: "🐛 "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting the bug. Please provide the following information.
+
+  - type: textarea
+    id: bug-details
+    attributes:
+      label: Bug Description
+      description: Please provide a detailed description of the bug.
+      placeholder: Please be specific.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: Please describe the expected behavior.
+    validations:
+      required: true
