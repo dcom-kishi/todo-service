@@ -18,7 +18,6 @@
 6. ユーザーを選択し、`I accept the Terms of Service`, `I am over 18 years old` にチェックして `Continue` を選択する
 <img src="./images/github-gemini-code-assist-integration-05.png" width="50%">
 
-
 7. `Code review` と `Improve response Quality` にチェックして `Save` を選択する
 `Comment severity` は `Medium` にしておく
 <img src="./images/github-gemini-code-assist-integration-06.png" width="50%">
