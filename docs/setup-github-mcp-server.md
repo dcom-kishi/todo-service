@@ -25,7 +25,7 @@ GitHub MCP (Model Context Protocol) Server を導入することで、MCP 対応
     3. **Token name** に任意の名前（例: `github-mcp-server`）を入力し、**Expiration** を設定します。
     4. **Repository access** で、この機能を使用したいリポジトリ（例: `All repositories` または特定のリポジトリ）を選択します。
     5. **Permissions** > **Repository permissions** で、最低限以下の権限を設定します:
-       - **Contents**: `Read-only`
+       - **Contents**: `Read and write`
        - **Issues**: `Read and write`
        - **Pull requests**: `Read and write`
        - **Metadata**: `Read-only` (必須)
@@ -48,7 +48,7 @@ MCP クライアントの設定ファイルに以下の設定を追加してく�
 
 使用するクライアントによって異なりますが、代表的な配置場所は以下の通りです。
 
-- **Gemini CLI**: プロジェクトルートの `.gemini/mcp.json`
+- **Gemini CLI**: プロジェクトルートの `.gemini/settings.json`
 
 ### 設定例 (JSON)
 
@@ -71,7 +71,7 @@ MCP クライアントの設定ファイルに以下の設定を追加してく�
   }
 }
 
-> **注意**: セキュリティのため、トークンを直接設定ファイルに書く代わりに環境変数を利用する方法も検討してください。
+```
 
 ## 4. 利用可能な機能
 

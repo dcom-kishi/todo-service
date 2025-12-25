@@ -19,6 +19,7 @@ Kiro-style Spec Driven Development implementation on AI-DLC (AI Development Life
 
 ## Development Guidelines
 - Think in English, generate responses in Japanese. All Markdown content written to project files (e.g., requirements.md, design.md, tasks.md, research.md, validation reports) MUST be written in the target language configured for this specification (see spec.json.language).
+- When utilizing the GitHub MCP server to create Issues or Pull Requests, it is mandatory to follow the templates found in the .github/ directory (specifically .github/ISSUE_TEMPLATE/ or .github/PULL_REQUEST_TEMPLATE.md).
 
 ## Minimal Workflow
 - Phase 0 (optional): `/kiro:steering`, `/kiro:steering-custom`

@@ -49,6 +49,10 @@ gemini
    - `/model` コマンドを入力し、`Auto (Gemini 3)` が選択可能になっていることを確認します。
      <img src="./images/setup-development-environment-03.png" width="50%">
 
+4. **学習利用無効化**:
+   - Gemini CLI 内で `/privacy` コマンドを入力します。
+   - `No` を選択します。
+
 ## 3. VS Code のセットアップ
 
 ### 拡張機能のインストール
@@ -82,7 +86,7 @@ npx cc-sdd@latest --gemini --lang ja
 
 Gemini CLI を再起動（一度 `exit` して再度 `gemini` 起動）すると、以下のカスタムコマンドが使用可能になります。
 
-- `/kiro:spec-init <作りたいもの>` : 仕様書のドラフト作成を開始
+- `/kiro:spec-init <feature>` : 仕様書のドラフト作成を開始
 - `/kiro:spec-requirements {feature}` : 要件定義の作成
 - `/kiro:spec-design {feature}` : 設計書の作成
 - `/kiro:spec-tasks {feature}` : タスクの作成
