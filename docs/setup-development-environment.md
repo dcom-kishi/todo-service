@@ -2,9 +2,12 @@
 
 本プロジェクトの開発環境構築手順です。
 
+> [!NOTE]
+> 本手順は Windows 環境を前提としています。
+
 ## 1. 前提条件のインストール
 
-管理者権限でターミナルを起動し、以下のコマンドを実行して必要なツールをインストールします。
+管理者権限でコマンドラインを起動し、以下のコマンドを実行して必要なツールをインストールします。
 
 ```powershell
 # Node.js (LTS)
@@ -14,13 +17,13 @@ winget install -id OpenJS.NodeJS.LTS --silent
 winget install -id Microsoft.VisualStudioCode --silent
 ```
 
-インストール完了後、ターミナルを再起動してください。
+インストール完了後、コマンドラインを再起動してください。
 
 ## 2. Gemini CLI のセットアップ
 
 ### インストール
 
-管理者権限のターミナルで以下を実行します。
+管理者権限のコマンドラインで以下を実行します。
 
 ```powershell
 npm install -g @google/gemini-cli
@@ -40,7 +43,7 @@ gemini
      <img src="./images/setup-development-environment-01.png" width="50%">
      <img src="./images/setup-development-environment-02.png" width="50%">
 
-1. **モデル設定 (Gemini 3 の有効化)**:
+3. **モデル設定 (Gemini 3 の有効化)**:
    - Gemini CLI 内で `/settings` コマンドを入力します。
    - `Preview Features (e.g., models)` を選択し `true` に設定します。
    - `/model` コマンドを入力し、`Auto (Gemini 3)` が選択可能になっていることを確認します。
@@ -78,7 +81,6 @@ npx cc-sdd@latest --gemini --lang ja
 ### 使用方法
 
 Gemini CLI を再起動（一度 `exit` して再度 `gemini` 起動）すると、以下のカスタムコマンドが使用可能になります。
-詳細は `GEMINI.md` を参照してください。
 
 - `/kiro:spec-init <作りたいもの>` : 仕様書のドラフト作成を開始
 - `/kiro:spec-requirements {feature}` : 要件定義の作成
