@@ -383,7 +383,7 @@ sequenceDiagram
 
 **契約 (Service Interface / RPC)**
 
-\```typescript
+```typescript
 // actions/task.ts
 
 type ActionState = {

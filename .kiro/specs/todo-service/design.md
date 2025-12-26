@@ -102,11 +102,11 @@ sequenceDiagram
 
 | 要件ID | 概要 | コンポーネント | インターフェース |
 |--------|------|----------------|------------------|
-| 1.1, 1.2 | ログイン認証 | FE: LoginForm, BE: AuthRouter | POST /auth/login |
-| 1.3 | ログアウト | FE: UserMenu, BE: AuthRouter | POST /auth/logout |
-| 2.1 - 2.4 | ユーザー登録 | FE: RegisterForm, BE: UserRouter | POST /users/register |
-| 3.1 - 3.4 | ユーザー情報管理 | FE: ProfilePage, BE: UserRouter | PUT /users/me |
-| 4.1 - 4.3 | タスク管理・Kanban | FE: KanbanBoard, BE: TaskRouter | GET/POST/PUT /tasks |
+| 1.1, 1.2 | ログイン認証 | FE: LoginForm, BE: AuthRouter | POST /api/v1/auth/login |
+| 1.3 | ログアウト | FE: UserMenu, BE: AuthRouter | POST /api/v1/auth/logout |
+| 2.1 - 2.4 | ユーザー登録 | FE: RegisterForm, BE: AuthRouter | POST /api/v1/auth/signup |
+| 3.1 - 3.4 | ユーザー情報管理 | FE: ProfilePage, BE: UserRouter | PUT /api/v1/users/me |
+| 4.1 - 4.3 | タスク管理・Kanban | FE: KanbanBoard, BE: TaskRouter | GET/POST/PUT /api/v1/tasks |
 | 5.1, 5.2 | 多言語対応 | FE: i18nProvider | - |
 
 ## コンポーネントとインターフェース (Components and Interfaces)
@@ -117,8 +117,9 @@ sequenceDiagram
 |----------------|-------------|------|------|----------------|------|
 | `frontend/app` | UI | 画面描画とルーティング | 5.1-5.3 | Backend API (P0) | - |
 | `backend/main` | API | エントリーポイントと設定 | - | FastAPI (P0) | HTTP |
-| `backend/routers/auth` | Auth | 認証処理のハンドリング | 1.1-1.5 | Supabase Client (P0) | API |
-| `backend/routers/tasks` | Task | タスクCRUDの実装 | 4.1-4.5 | Supabase DB (P0) | API |
+| `backend/routers/auth` | Auth | 認証処理のハンドリング | 1.1, 1.2, 2.1 | Supabase Client (P0) | API |
+| `backend/routers/tasks` | Task | タスクCRUDの実装 | 4.1, 4.2, 4.3 | Supabase DB (P0) | API |
+| `backend/routers/users` | User | ユーザー情報の管理 | 3.1-3.4 | Supabase DB (P0) | API |
 
 ### [Domain: Backend API]
 
@@ -139,6 +140,26 @@ sequenceDiagram
 |--------|----------|---------|----------|--------|
 | POST | `/api/v1/auth/login` | `{email, password}` | `{access_token, token_type}` | 401 |
 | POST | `/api/v1/auth/signup` | `{email, password, name}` | `{msg, user_id}` | 400, 409 |
+| POST | `/api/v1/auth/logout` | - | `{msg}` | 401 |
+
+#### User Router (`backend/routers/users.py`)
+
+| 項目 | 詳細 |
+|------|------|
+| 意図 | ユーザープロファイルの取得、更新、削除を行う。 |
+| 要件 | 3.1, 3.2, 3.3, 3.4 |
+
+**責任と制約**
+- 認証済みユーザー (`Depends(get_current_user)`) のみアクセス可能。
+- 自身のプロファイルのみ操作可能。
+
+**API Contract**
+
+| Method | Endpoint | Request | Response | Errors |
+|--------|----------|---------|----------|--------|
+| GET | `/api/v1/users/me` | - | `UserProfile` | 401 |
+| PUT | `/api/v1/users/me` | `UserProfileUpdate` | `UserProfile` | 400, 401 |
+| DELETE | `/api/v1/users/me` | - | `{msg}` | 401 |
 
 #### Task Router (`backend/routers/tasks.py`)
 
