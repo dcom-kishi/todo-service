@@ -1,0 +1,34 @@
+services:
+  frontend:
+    build: ./frontend
+    command: npm run dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    env_file:
+      - .env
+      - .env.local
+    # NEXT_PUBLIC_BACKEND_URL は .env で localhost:8000 に設定されているため
+    # ブラウザからアクセスする場合はそのままでOK
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - /app/.venv
+    env_file:
+      - .env
+      - .env.local
+    depends_on:
+      - supabase-ready
+
+  supabase-ready:
+    image: alpine
+    command: /bin/sh -c "echo Supabase is assumed to be running on host"
