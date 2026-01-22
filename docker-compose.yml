@@ -26,8 +26,6 @@ services:
     env_file:
       - .env
       - .env.local
-    environment:
-      - SUPABASE_URL=http://host.docker.internal:54321
     depends_on:
       - supabase-ready
 
