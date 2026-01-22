@@ -1,0 +1,23 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:54321
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - SUPABASE_URL=http://host.docker.internal:54321
+      - SUPABASE_KEY=placeholder
