@@ -27,7 +27,6 @@ services:
       - .env
       - .env.local
     environment:
-      # コンテナ内からホスト側の Supabase にアクセスするための上書き
       - SUPABASE_URL=http://host.docker.internal:54321
     depends_on:
       - supabase-ready

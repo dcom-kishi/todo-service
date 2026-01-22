@@ -110,8 +110,8 @@ npx supabase start
 
 起動完了後、表示されるログ（または `npx supabase status` コマンドの結果）から以下の値をコピーし、`.env.local` に貼り付けます。
 
-- `anon key` -> `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `service_role key` -> `SUPABASE_KEY`
+- `Publishable key` -> `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `Secret key` -> `SUPABASE_KEY`
 
 ### 5.3 サービスの起動
 
