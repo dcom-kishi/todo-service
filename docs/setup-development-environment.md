@@ -92,3 +92,33 @@ Gemini CLI を再起動（一度 `exit` して再度 `gemini` 起動）すると
 - `/kiro:spec-tasks {feature}` : タスクの作成
 - `/kiro:spec-impl {feature}` : 実装の開始
 - `/kiro:spec-status {feature}` : 進捗確認
+
+## 5. アプリケーションの起動と確認
+
+### 環境変数の準備
+
+1. プロジェクトルートにある `.env.local.example` を `.env.local` にコピーします。
+2. `.env.local` 内の `GITHUB_PERSONAL_ACCESS_TOKEN` や Supabase のキーを適切に設定します。
+
+### サービスの起動
+
+Docker Desktop が起動していることを確認し、以下のコマンドを実行します。
+
+```bash
+# Supabase の起動 (ローカルDB)
+npx supabase start
+
+# アプリケーション (Frontend/Backend) の起動
+docker-compose up --build -d
+```
+
+### 動作確認
+
+起動後、ブラウザで以下の URL にアクセスして動作を確認します。
+
+- **Frontend**: `http://localhost:3000`
+  - Supabase から取得した "Hello World" が表示されることを確認してください。
+- **Backend API**: `http://localhost:8000/api/v1/hello-supabase`
+  - 直接 API のレスポンスを確認できます。
+- **Supabase Studio**: `http://localhost:54323`
+  - ローカルのデータベースの状態を確認できます。
