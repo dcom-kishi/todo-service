@@ -1,13 +1,16 @@
-import os
-from pydantic_settings import BaseSettings
-from dotenv import load_dotenv
-
-# Load .env and .env.local
-load_dotenv(dotenv_path="../.env")
-load_dotenv(dotenv_path="../.env.local")
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing import Optional
 
 class Settings(BaseSettings):
-    SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
-    SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", "")
+    SUPABASE_URL: str
+    SUPABASE_KEY: str
+    
+    # Allow loading from .env files for local development
+    # If variables are already set in environment (like by Docker), they take precedence.
+    model_config = SettingsConfigDict(
+        env_file=("../.env", "../.env.local"),
+        env_file_encoding='utf-8',
+        extra='ignore'
+    )
 
 settings = Settings()

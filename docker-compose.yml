@@ -10,8 +10,8 @@ services:
     env_file:
       - .env
       - .env.local
-    environment:
-      - NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+    # NEXT_PUBLIC_BACKEND_URL は .env で localhost:8000 に設定されているため
+    # ブラウザからアクセスする場合はそのままでOK
     depends_on:
       - backend
 
@@ -26,11 +26,11 @@ services:
       - .env
       - .env.local
     environment:
+      # コンテナ内からホスト側の Supabase にアクセスするための上書き
       - SUPABASE_URL=http://host.docker.internal:54321
     depends_on:
       - supabase-ready
 
-  # Dummy service to wait for Supabase
   supabase-ready:
     image: alpine
     command: /bin/sh -c "echo Supabase is assumed to be running on host"
