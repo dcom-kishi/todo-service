@@ -1,11 +1,12 @@
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
-  
+  // For this Docker environment, we want to prioritize the service name
+  const fetchUrl = typeof window === 'undefined' ? 'http://backend:8000' : (process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000');
+
   let data = "Loading...";
   try {
-    const res = await fetch(`${backendUrl}/api/v1/hello-supabase`, { cache: 'no-store' });
+    const res = await fetch(`${fetchUrl}/api/v1/hello-supabase`, { cache: 'no-store' });
     const json = await res.json();
     data = json.data;
   } catch (error) {
@@ -19,7 +20,7 @@ export default async function Home() {
         <h1 className="text-4xl font-bold italic text-blue-600">
           Todo Service
         </h1>
-        
+
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Message from Supabase via Backend API:</p>
           <p className="text-2xl font-mono text-green-500">{data}</p>

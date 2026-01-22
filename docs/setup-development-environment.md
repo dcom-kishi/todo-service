@@ -95,30 +95,48 @@ Gemini CLI を再起動（一度 `exit` して再度 `gemini` 起動）すると
 
 ## 5. アプリケーションの起動と確認
 
-### 環境変数の準備
+### 5.1 環境変数の準備
 
-1. プロジェクトルートにある `.env.local.example` を `.env.local` にコピーします。
-2. `.env.local` 内の `GITHUB_PERSONAL_ACCESS_TOKEN` や Supabase のキーを適切に設定します。
+プロジェクトルートにある `.env.local.example` を `.env.local` にコピーします。
 
-### サービスの起動
+### 5.2 Supabase の起動とキーの取得
 
 Docker Desktop が起動していることを確認し、以下のコマンドを実行します。
 
-```bash
+```powershell
 # Supabase の起動 (ローカルDB)
 npx supabase start
+```
 
-# アプリケーション (Frontend/Backend) の起動
+起動完了後、表示されるログ（または `npx supabase status` コマンドの結果）から以下の値をコピーし、`.env.local` に貼り付けます。
+
+- `anon key` -> `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `service_role key` -> `SUPABASE_KEY`
+
+### 5.3 サービスの起動
+
+アプリケーション（Frontend/Backend）を起動します。
+
+```powershell
+# コンテナのビルドと起動
 docker-compose up --build -d
 ```
 
-### 動作確認
+### 5.4 動作確認
 
-起動後、ブラウザで以下の URL にアクセスして動作を確認します。
+起動後、以下の方法で正常に連携できているか確認します。
 
-- **Frontend**: `http://localhost:3000`
-  - Supabase から取得した "Hello World" が表示されることを確認してください。
-- **Backend API**: `http://localhost:8000/api/v1/hello-supabase`
-  - 直接 API のレスポンスを確認できます。
-- **Supabase Studio**: `http://localhost:54323`
-  - ローカルのデータベースの状態を確認できます。
+1. **ブラウザで確認**:
+   - [http://localhost:3000](http://localhost:3000) にアクセスし、中央のカードに **"Hello World"** と緑文字で表示されていれば成功です。
+2. **コマンドで確認**:
+
+   ```powershell
+   # Backend 経由での Supabase データ取得確認
+   curl.exe -s http://localhost:8000/api/v1/hello-supabase
+   ```
+
+   `{"data":"Hello World"}` というレスポンスが返ってくれば正常です。
+
+3. **管理ツール**:
+   - **Supabase Studio**: [http://localhost:54323](http://localhost:54323)
+     - `Table Editor` から `tasks` テーブルに "Hello World" というデータが入っていることを確認できます。
