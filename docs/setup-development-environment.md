@@ -146,14 +146,14 @@ docker-compose up --build -d
 
 ### 6.1 バックエンドのユニットテスト
 
-バックエンドの実装を検証するためにユニットテストを実行します。
+バックエンドの実装を検証するためにユニットテストを実行します。このテストは **Supabase をモック（Mock）化しているため、Supabase サービスを起動していなくても実行可能** です。
 
 ```powershell
 cd backend
 # 依存関係のインストール（未完了の場合）
 uv sync
 # テストの実行
-$env:PYTHONPATH = "."; uv run pytest
+uv run python -m pytest
 ```
 
 テスト実行時には `backend/tests/test_auth.py` と `backend/tests/test_users.py` が実行され、認証ロジックやバリデーションが正しく機能していることが検証されます。
