@@ -2,17 +2,17 @@ from unittest.mock import MagicMock
 import pytest
 
 class TestAuth:
-    def test_signup_success(self, client, mock_supabase):
+    def test_signup_success(self, client, mock_supabase_admin):
         # Setup Mock
         mock_user = MagicMock()
         mock_user.id = "test-user-id"
         
         mock_auth_response = MagicMock()
         mock_auth_response.user = mock_user
-        mock_supabase.auth.sign_up.return_value = mock_auth_response
+        mock_supabase_admin.auth.sign_up.return_value = mock_auth_response
 
         mock_postgrest_builder = MagicMock()
-        mock_supabase.table.return_value = mock_postgrest_builder
+        mock_supabase_admin.table.return_value = mock_postgrest_builder
         mock_postgrest_builder.upsert.return_value = mock_postgrest_builder
         mock_postgrest_builder.execute.return_value = MagicMock(data=[{"id": "test-user-id"}])
 
@@ -67,7 +67,7 @@ class TestAuth:
         assert response.status_code == 422
         assert "not allowed" in response.json()["detail"][0]["msg"]
 
-    def test_login_success(self, client, mock_supabase):
+    def test_login_success(self, client, mock_supabase_admin):
         # Setup Mock
         mock_user = MagicMock()
         mock_user.email = "test@example.com"
@@ -81,7 +81,7 @@ class TestAuth:
         mock_auth_response.user = mock_user
         mock_auth_response.session = mock_session
         
-        mock_supabase.auth.sign_in_with_password.return_value = mock_auth_response
+        mock_supabase_admin.auth.sign_in_with_password.return_value = mock_auth_response
 
         # Execute
         payload = {
@@ -96,11 +96,11 @@ class TestAuth:
         assert data["access_token"] == "fake-access-token"
         assert data["user"]["email"] == "test@example.com"
 
-    def test_login_failure(self, client, mock_supabase):
+    def test_login_failure(self, client, mock_supabase_admin):
         # Setup Mock
         mock_auth_response = MagicMock()
         mock_auth_response.session = None
-        mock_supabase.auth.sign_in_with_password.return_value = mock_auth_response
+        mock_supabase_admin.auth.sign_in_with_password.return_value = mock_auth_response
 
         # Execute
         payload = {
@@ -113,11 +113,11 @@ class TestAuth:
         assert response.status_code == 401
         assert response.json()["detail"] == "Login failed"
 
-    def test_logout(self, client, mock_supabase):
+    def test_logout(self, client, mock_supabase_admin):
         # Execute
         response = client.post("/api/v1/auth/logout")
 
         # Assert
         assert response.status_code == 200
         assert response.json() == {"message": "Logged out successfully"}
-        mock_supabase.auth.sign_out.assert_called_once()
+        mock_supabase_admin.auth.sign_out.assert_called_once()

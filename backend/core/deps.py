@@ -2,14 +2,14 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from supabase import Client
-from .supabase_client import get_supabase
+from .supabase_client import get_supabase_admin
 from schemas.user import UserProfile
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
 
 def get_current_user(
     token: Annotated[str, Depends(oauth2_scheme)],
-    supabase: Annotated[Client, Depends(get_supabase)]
+    supabase: Annotated[Client, Depends(get_supabase_admin)]
 ) -> UserProfile:
     """
     Validates the JWT token using Supabase Auth and returns the current user profile.

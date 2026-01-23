@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from supabase import Client
-from core.supabase_client import get_supabase
+from core.supabase_client import get_supabase_admin
 from schemas.auth import Token
 from schemas.user import UserCreate, UserLogin
 from gotrue.errors import AuthApiError
@@ -13,7 +13,7 @@ router = APIRouter(
 @router.post("/signup", response_model=dict, status_code=status.HTTP_201_CREATED)
 def signup(
     user_in: UserCreate,
-    supabase: Client = Depends(get_supabase)
+    supabase: Client = Depends(get_supabase_admin)
 ):
     try:
         # 1. Sign up user in Supabase Auth
@@ -59,7 +59,7 @@ def signup(
 @router.post("/login", response_model=Token)
 def login(
     user_in: UserLogin,
-    supabase: Client = Depends(get_supabase)
+    supabase: Client = Depends(get_supabase_admin)
 ):
     try:
         auth_response = supabase.auth.sign_in_with_password({
@@ -87,7 +87,7 @@ def login(
 
 @router.post("/logout")
 def logout(
-    supabase: Client = Depends(get_supabase)
+    supabase: Client = Depends(get_supabase_admin)
 ):
     try:
         supabase.auth.sign_out()

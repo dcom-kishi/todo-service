@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from supabase import Client
-from core.supabase_client import get_supabase, get_supabase_admin
+from core.supabase_client import get_supabase_admin
 from core.deps import get_current_user
 from schemas.user import UserProfile, UserUpdate
 
@@ -23,7 +23,6 @@ def read_users_me(
 def update_user_me(
     user_update: UserUpdate,
     current_user: UserProfile = Depends(get_current_user),
-    supabase: Client = Depends(get_supabase),
     supabase_admin: Client = Depends(get_supabase_admin)
 ):
     """
@@ -54,10 +53,10 @@ def update_user_me(
             
         if profile_attrs:
             profile_attrs["updated_at"] = "now()"
-            supabase.table("profiles").update(profile_attrs).eq("id", current_user.id).execute()
+            supabase_admin.table("profiles").update(profile_attrs).eq("id", current_user.id).execute()
 
         # 3. Return updated profile
-        updated_profile_response = supabase.table("profiles").select("*").eq("id", current_user.id).single().execute()
+        updated_profile_response = supabase_admin.table("profiles").select("*").eq("id", current_user.id).single().execute()
         updated_profile_data = updated_profile_response.data
         
         # Get latest email from auth if it was updated

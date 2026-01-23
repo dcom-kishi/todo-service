@@ -27,7 +27,7 @@ class TestUsers:
 
         app.dependency_overrides.pop(get_current_user)
 
-    def test_update_user_me_success(self, client, mock_supabase, mock_supabase_admin, mock_user_profile):
+    def test_update_user_me_success(self, client, mock_supabase_admin, mock_user_profile):
         from main import app
         app.dependency_overrides[get_current_user] = lambda: mock_user_profile
 
@@ -50,7 +50,7 @@ class TestUsers:
                 mock_builder.execute.return_value = MagicMock(data=updated_data)
             return mock_builder
 
-        mock_supabase.table.side_effect = table_side_effect
+        mock_supabase_admin.table.side_effect = table_side_effect
         mock_supabase_admin.auth.admin.update_user_by_id.return_value = MagicMock()
 
         # Execute
