@@ -112,6 +112,10 @@ npx supabase start
 
 - `Publishable key` -> `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `Secret key` -> `SUPABASE_KEY`
+- `Service Role key` -> `SUPABASE_SERVICE_ROLE_KEY`
+
+> [!CAUTION]
+> `Service Role key` は管理者権限を持つ強力なキーです。決して公開リポジトリにコミットしないでください。
 
 ### 5.3 サービスの起動
 
@@ -136,6 +140,23 @@ docker-compose up --build -d
    ```
 
    `{"data":"Hello World"}` というレスポンスが返ってくれば正常です。
+
+
+## 6. テストの実行
+
+### 6.1 バックエンドのユニットテスト
+
+バックエンドの実装を検証するためにユニットテストを実行します。
+
+```powershell
+cd backend
+# 依存関係のインストール（未完了の場合）
+uv sync
+# テストの実行
+$env:PYTHONPATH = "."; uv run pytest
+```
+
+テスト実行時には `backend/tests/test_auth.py` と `backend/tests/test_users.py` が実行され、認証ロジックやバリデーションが正しく機能していることが検証されます。
 
 3. **管理ツール**:
    - **Supabase Studio**: [http://localhost:54323](http://localhost:54323)
