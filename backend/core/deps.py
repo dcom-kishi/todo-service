@@ -2,8 +2,10 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from supabase import Client
+from gotrue.errors import AuthApiError
 from .supabase_client import get_supabase_admin
 from schemas.user import UserProfile
+import logging
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
 
@@ -42,12 +44,18 @@ def get_current_user(
             updated_at=profile_data.get("updated_at")
         )
 
-    except Exception as e:
-        # Differentiate between specific Supabase errors if needed, 
-        # but for now catch generic auth failures
-        print(f"Auth error: {e}")
+    except AuthApiError as e:
+        logging.error(f"Auth error: {e}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Unexpected error in get_current_user: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error",
         )

@@ -3,6 +3,8 @@ from supabase import Client
 from core.supabase_client import get_supabase_admin
 from core.deps import get_current_user
 from schemas.user import UserProfile, UserUpdate
+from gotrue.errors import AuthApiError
+import logging
 
 router = APIRouter(
     prefix="/users",
@@ -55,24 +57,25 @@ def update_user_me(
             profile_attrs["updated_at"] = "now()"
             supabase_admin.table("profiles").update(profile_attrs).eq("id", current_user.id).execute()
 
-        # 3. Return updated profile
-        updated_profile_response = supabase_admin.table("profiles").select("*").eq("id", current_user.id).single().execute()
-        updated_profile_data = updated_profile_response.data
-        
-        # Get latest email from auth if it was updated
+        # 3. Return updated profile (Avoid redundant DB query if possible)
+        # Email comes from user_update or current_user
         email = user_update.email if user_update.email else current_user.email
+        username = user_update.username if user_update.username is not None else current_user.username
+        avatar_url = user_update.avatar_url if user_update.avatar_url is not None else current_user.avatar_url
         
         return UserProfile(
             id=current_user.id,
             email=email,
-            username=updated_profile_data.get("username"),
-            avatar_url=updated_profile_data.get("avatar_url"),
-            updated_at=updated_profile_data.get("updated_at")
+            username=username,
+            avatar_url=avatar_url,
+            updated_at=None # We could fetch it, but it might be optional
         )
 
+    except AuthApiError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.message)
     except Exception as e:
-        print(f"Update User Error: {e}")
-        raise HTTPException(status_code=400, detail="Could not update user profile")
+        logging.error(f"Update User Error: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not update user profile")
 
 
 @router.delete("/me")
@@ -91,5 +94,5 @@ def delete_user_me(
         return {"message": "Account deleted successfully"}
 
     except Exception as e:
-        print(f"Delete User Error: {e}")
+        logging.error(f"Delete User Error: {e}")
         raise HTTPException(status_code=500, detail="Internal server error during account deletion")

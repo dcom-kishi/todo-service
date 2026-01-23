@@ -1,23 +1,25 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from supabase import Client
 from core.supabase_client import get_supabase_admin
-from schemas.auth import Token
+from core.config import settings
+from schemas.auth import Token, SignupResponse
 from schemas.user import UserCreate, UserLogin
 from gotrue.errors import AuthApiError
+import logging
 
 router = APIRouter(
     prefix="/auth",
     tags=["auth"],
 )
 
-@router.post("/signup", response_model=dict, status_code=status.HTTP_201_CREATED)
+@router.post("/signup", response_model=SignupResponse, status_code=status.HTTP_201_CREATED)
 def signup(
     user_in: UserCreate,
     supabase: Client = Depends(get_supabase_admin)
 ):
     try:
         # 1. Sign up user in Supabase Auth
-        avatar_url = user_in.avatar_url or "https://api.dicebear.com/7.x/avataaars/svg?seed=default"
+        avatar_url = user_in.avatar_url or settings.DEFAULT_AVATAR_URL
         
         auth_response = supabase.auth.sign_up({
             "email": user_in.email,
@@ -45,14 +47,14 @@ def signup(
         # We use upsert=True just in case a trigger already created it to avoid race conditions
         supabase.table("profiles").upsert(profile_data).execute()
 
-        return {"message": "User created successfully", "user_id": user_id}
+        return SignupResponse(message="User created successfully", user_id=user_id)
 
     except AuthApiError as e:
         raise HTTPException(status_code=400, detail=e.message)
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Signup Error: {e}")
+        logging.error(f"Signup Error: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
@@ -82,7 +84,7 @@ def login(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Login Error: {e}")
+        logging.error(f"Login Error: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @router.post("/logout")
@@ -95,4 +97,5 @@ def logout(
     except HTTPException:
         raise
     except Exception as e:
-         raise HTTPException(status_code=500, detail=str(e))
+         logging.error(f"Logout Error: {e}")
+         raise HTTPException(status_code=500, detail="An error occurred during logout")

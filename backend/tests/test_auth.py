@@ -1,11 +1,13 @@
 from unittest.mock import MagicMock
 import pytest
+from uuid import uuid4
 
 class TestAuth:
     def test_signup_success(self, client, mock_supabase_admin):
         # Setup Mock
+        user_id = str(uuid4())
         mock_user = MagicMock()
-        mock_user.id = "test-user-id"
+        mock_user.id = user_id
         
         mock_auth_response = MagicMock()
         mock_auth_response.user = mock_user
@@ -14,7 +16,7 @@ class TestAuth:
         mock_postgrest_builder = MagicMock()
         mock_supabase_admin.table.return_value = mock_postgrest_builder
         mock_postgrest_builder.upsert.return_value = mock_postgrest_builder
-        mock_postgrest_builder.execute.return_value = MagicMock(data=[{"id": "test-user-id"}])
+        mock_postgrest_builder.execute.return_value = MagicMock(data=[{"id": user_id}])
 
         # Execute
         payload = {
@@ -27,7 +29,7 @@ class TestAuth:
 
         # Assert
         assert response.status_code == 201
-        assert response.json() == {"message": "User created successfully", "user_id": "test-user-id"}
+        assert response.json() == {"message": "User created successfully", "user_id": user_id}
 
     def test_signup_password_validation_errors(self, client):
         # Case 1: Too short

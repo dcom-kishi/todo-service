@@ -3,6 +3,17 @@ from datetime import datetime
 from uuid import UUID
 from typing import Optional
 import re
+from core.config import settings
+
+def validate_password_complexity(v: str) -> str:
+    # Check for at least one letter, one number, and one symbol
+    if not re.search(r"[A-Za-z]", v):
+        raise ValueError("Password must contain at least one letter")
+    if not re.search(r"[0-9]", v):
+        raise ValueError("Password must contain at least one number")
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", v):
+        raise ValueError("Password must contain at least one symbol")
+    return v
 
 class UserBase(BaseModel):
     email: EmailStr
@@ -15,14 +26,7 @@ class UserCreate(UserBase):
     @field_validator("password")
     @classmethod
     def password_complexity(cls, v: str) -> str:
-        # Check for at least one letter, one number, and one symbol
-        if not re.search(r"[A-Za-z]", v):
-            raise ValueError("Password must contain at least one letter")
-        if not re.search(r"[0-9]", v):
-            raise ValueError("Password must contain at least one number")
-        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", v):
-            raise ValueError("Password must contain at least one symbol")
-        return v
+        return validate_password_complexity(v)
 
     @field_validator("username")
     @classmethod
@@ -30,9 +34,7 @@ class UserCreate(UserBase):
         if v is not None:
             if not v.strip():
                 raise ValueError("Username cannot be empty")
-            # Simple NG word check example
-            ng_words = ["admin", "root", "support"]
-            if v.lower() in ng_words:
+            if v.lower() in settings.USERNAME_NG_WORDS:
                 raise ValueError(f"Username '{v}' is not allowed")
         return v
 
@@ -50,13 +52,7 @@ class UserUpdate(BaseModel):
     def password_complexity(cls, v: Optional[str]) -> Optional[str]:
         if v is None:
             return v
-        if not re.search(r"[A-Za-z]", v):
-            raise ValueError("Password must contain at least one letter")
-        if not re.search(r"[0-9]", v):
-            raise ValueError("Password must contain at least one number")
-        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", v):
-            raise ValueError("Password must contain at least one symbol")
-        return v
+        return validate_password_complexity(v)
 
 class UserProfile(BaseModel):
     id: UUID

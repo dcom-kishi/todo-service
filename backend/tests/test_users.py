@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 from core.deps import get_current_user
 from schemas.user import UserProfile
 from uuid import uuid4
+from main import app
 
 @pytest.fixture
 def mock_user_profile():
@@ -13,11 +14,14 @@ def mock_user_profile():
         avatar_url="http://example.com/avatar.png"
     )
 
+@pytest.fixture(autouse=True)
+def override_current_user(mock_user_profile):
+    app.dependency_overrides[get_current_user] = lambda: mock_user_profile
+    yield
+    app.dependency_overrides.pop(get_current_user, None)
+
 class TestUsers:
     def test_get_users_me(self, client, mock_user_profile):
-        from main import app
-        app.dependency_overrides[get_current_user] = lambda: mock_user_profile
-
         response = client.get("/api/v1/users/me")
         
         assert response.status_code == 200
@@ -25,12 +29,7 @@ class TestUsers:
         assert data["email"] == mock_user_profile.email
         assert data["username"] == mock_user_profile.username
 
-        app.dependency_overrides.pop(get_current_user)
-
     def test_update_user_me_success(self, client, mock_supabase_admin, mock_user_profile):
-        from main import app
-        app.dependency_overrides[get_current_user] = lambda: mock_user_profile
-
         updated_data = {
             "id": str(mock_user_profile.id),
             "username": "new_username",
@@ -65,12 +64,7 @@ class TestUsers:
         assert response.json()["username"] == "new_username"
         mock_supabase_admin.auth.admin.update_user_by_id.assert_called_once()
 
-        app.dependency_overrides.pop(get_current_user)
-
     def test_update_user_me_validation_error(self, client, mock_user_profile):
-        from main import app
-        app.dependency_overrides[get_current_user] = lambda: mock_user_profile
-
         # Invalid password (no symbol)
         payload = {
             "password": "NoSymbol123"
@@ -80,12 +74,7 @@ class TestUsers:
         assert response.status_code == 422
         assert "at least one symbol" in response.json()["detail"][0]["msg"]
 
-        app.dependency_overrides.pop(get_current_user)
-
     def test_delete_user_me(self, client, mock_supabase_admin, mock_user_profile):
-        from main import app
-        app.dependency_overrides[get_current_user] = lambda: mock_user_profile
-
         mock_supabase_admin.auth.admin.delete_user.return_value = MagicMock()
 
         response = client.delete("/api/v1/users/me")
@@ -93,5 +82,3 @@ class TestUsers:
         assert response.status_code == 200
         assert response.json()["message"] == "Account deleted successfully"
         mock_supabase_admin.auth.admin.delete_user.assert_called_once_with(str(mock_user_profile.id))
-
-        app.dependency_overrides.pop(get_current_user)
