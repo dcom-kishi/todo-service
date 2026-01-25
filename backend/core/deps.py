@@ -33,20 +33,28 @@ def get_current_user(
             )
 
         # 2. Fetch additional profile info from 'profiles' table
-        # Note: We use single() because we expect exactly one profile per user
-        profile_response = (
-            supabase.table("profiles").select("*").eq("id", user.id).single().execute()
-        )
-
-        profile_data = profile_response.data if profile_response.data else {}
+        profile_data = {}
+        try:
+            profile_response = (
+                supabase.table("profiles")
+                .select("*")
+                .eq("id", user.id)
+                .single()
+                .execute()
+            )
+            profile_data = profile_response.data if profile_response.data else {}
+        except Exception as e:
+            logging.warning(f"Profile record not found for user {user.id}: {e}")
+            # We don't raise here, we allow the user to proceed with basic Auth data
 
         # Merge Auth user data with Profile data
-        # Email comes from Auth, other fields from Profile
+        # Email comes from Auth, other fields from Profile or defaults
         return UserProfile(
             id=user.id,
             email=user.email,
-            username=profile_data.get("username"),
-            avatar_url=profile_data.get("avatar_url"),
+            username=profile_data.get("username") or user.user_metadata.get("username"),
+            avatar_url=profile_data.get("avatar_url")
+            or user.user_metadata.get("avatar_url"),
             updated_at=profile_data.get("updated_at"),
         )
 

@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from supabase import Client
 from supabase_auth.errors import AuthApiError
 
+from core.config import settings
 from core.deps import get_current_user
 from core.supabase_client import get_supabase_admin
 from schemas.user import UserProfile, UserUpdate
@@ -32,20 +33,40 @@ def update_user_me(
     Update current user profile.
     """
     try:
-        # 1. Update Auth data (Email/Password) if provided
+        # Debug: Check if admin key is present
+        if not settings.SUPABASE_SERVICE_ROLE_KEY:
+            logging.error("SUPABASE_SERVICE_ROLE_KEY is missing!")
+            raise HTTPException(
+                status_code=500, detail="Server configuration error: missing admin key"
+            )
+
+        # 1. Prepare Auth data updates
         auth_attrs = {}
         if user_update.email:
             auth_attrs["email"] = user_update.email
         if user_update.password:
             auth_attrs["password"] = user_update.password
 
+        metadata = {}
+        if user_update.username is not None:
+            metadata["username"] = user_update.username
+        if user_update.avatar_url is not None:
+            metadata["avatar_url"] = user_update.avatar_url
+
+        if metadata:
+            auth_attrs["user_metadata"] = metadata
+
         if auth_attrs:
-            # We use admin client because we don't have user session
-            # (access+refresh token) here.
-            # Only access token is available from get_current_user dependency.
-            supabase_admin.auth.admin.update_user_by_id(
-                str(current_user.id), auth_attrs
-            )
+            try:
+                logging.info(
+                    f"Updating Auth for user {current_user.id} with attributes: {list(auth_attrs.keys())}"
+                )
+                supabase_admin.auth.admin.update_user_by_id(
+                    str(current_user.id), auth_attrs
+                )
+            except Exception as e:
+                logging.error(f"Supabase Auth Admin Error: {str(e)}")
+                # Continue if it's just a metadata sync failure, but log it
 
         # 2. Update Profiles table data
         profile_attrs = {}
@@ -55,20 +76,10 @@ def update_user_me(
             profile_attrs["avatar_url"] = user_update.avatar_url
 
         if profile_attrs:
-            # Update user_metadata in Auth to keep it in sync
-            # This is important because the frontend session often relies on user_metadata
-            supabase_admin.auth.admin.update_user_by_id(
-                str(current_user.id),
-                {"user_metadata": profile_attrs}
-            )
-
-            # Fetch updated data from DB to get the server-side updated_at
-            response = (
-                supabase_admin.table("profiles")
-                .update(profile_attrs)
-                .eq("id", current_user.id)
-                .execute()
-            )
+            logging.info(f"Upserting Profiles table for user {current_user.id}")
+            # Use upsert to handle cases where the profile record might be missing
+            profile_attrs["id"] = str(current_user.id)
+            response = supabase_admin.table("profiles").upsert(profile_attrs).execute()
 
             if response.data:
                 updated_profile = response.data[0]
@@ -82,19 +93,31 @@ def update_user_me(
                     updated_at=updated_profile.get("updated_at"),
                 )
 
-        # 3. Return updated profile (If no profile fields were changed but auth
-        # fields were)
         return UserProfile(
             id=current_user.id,
             email=user_update.email if user_update.email else current_user.email,
-            username=current_user.username,
-            avatar_url=current_user.avatar_url,
+            username=user_update.username
+            if user_update.username is not None
+            else current_user.username,
+            avatar_url=user_update.avatar_url
+            if user_update.avatar_url is not None
+            else current_user.avatar_url,
             updated_at=current_user.updated_at,
         )
 
+    except Exception as e:
+        import traceback
+
+        error_details = traceback.format_exc()
+        logging.error(f"Update User Detail Error:\n{error_details}")
+        raise HTTPException(status_code=500, detail=f"Update failed: {str(e)}")
+
     except AuthApiError as e:
         logging.warning(f"Auth API error on updating user {current_user.id}: {e}")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid data provided for update.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid data provided for update.",
+        )
     except Exception as e:
         logging.error(f"Update User Error: {e}")
         raise HTTPException(
