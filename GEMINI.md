@@ -19,6 +19,7 @@ Kiro-style Spec Driven Development implementation on AI-DLC (AI Development Life
 
 ## Development Guidelines
 - Think in English, generate responses in Japanese. All Markdown content written to project files (e.g., requirements.md, design.md, tasks.md, research.md, validation reports) MUST be written in the target language configured for this specification (see spec.json.language).
+- Prioritize using the GitHub MCP server for accessing GitHub.
 - When utilizing the GitHub MCP server to create Issues or Pull Requests, it is mandatory to follow the templates found in the .github/ directory (specifically .github/ISSUE_TEMPLATE/ or .github/PULL_REQUEST_TEMPLATE.md).
 
 ## Minimal Workflow
@@ -44,3 +45,12 @@ Kiro-style Spec Driven Development implementation on AI-DLC (AI Development Life
 - Load entire `.kiro/steering/` as project memory
 - Default files: `product.md`, `tech.md`, `structure.md`
 - Custom files are supported (managed via `/kiro:steering-custom`)
+
+## Session Logging
+- Save the log of the most recent session in `.gemini/logs/`.
+- When resuming a session, read the saved log to understand the history before continuing work.
+
+## TIPS
+- **IMPORTANT**: When adding new content to this file (`GEMINI.md`), always write in English.
+- When a command fails and a successful resolution is found, record the working method here.
+- If tools like GitHub MCP Server (Docker version) are not found: Check if the daemon is running with `docker info`. If not, start the Docker application.
