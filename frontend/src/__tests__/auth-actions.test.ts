@@ -52,7 +52,7 @@ describe('Auth Actions', () => {
   });
 
   describe('signupAction', () => {
-    it('returns success and generates random avatar URL', async () => {
+    it('returns success when API call is successful', async () => {
       fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({ id: '1' }),
@@ -69,7 +69,13 @@ describe('Auth Actions', () => {
         expect.stringContaining('/auth/signup'),
         expect.objectContaining({
           method: 'POST',
-          body: expect.stringContaining('"avatar_url":"https://api.dicebear.com/7.x/avataaars/svg?seed=testuser"'),
+          body: expect.stringContaining('"username":"testuser"'),
+        })
+      );
+      expect(fetchMock).not.toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          body: expect.stringContaining('"avatar_url"'),
         })
       );
     });

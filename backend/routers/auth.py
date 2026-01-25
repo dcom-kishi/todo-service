@@ -1,4 +1,5 @@
 import logging
+import urllib.parse
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from supabase import Client
@@ -21,7 +22,7 @@ router = APIRouter(
 def signup(user_in: UserCreate, supabase: Client = Depends(get_supabase_admin)):
     try:
         # 1. Sign up user in Supabase Auth
-        avatar_url = user_in.avatar_url or f"https://api.dicebear.com/7.x/avataaars/svg?seed={user_in.email}"
+        avatar_url = user_in.avatar_url or f"https://api.dicebear.com/7.x/avataaars/svg?seed={urllib.parse.quote(user_in.email)}"
 
         auth_response = supabase.auth.sign_up(
             {
@@ -73,11 +74,30 @@ def login(user_in: UserLogin, supabase: Client = Depends(get_supabase_admin)):
         if not auth_response.session:
             raise HTTPException(status_code=401, detail="Login failed")
 
+        user_data = auth_response.user.model_dump()
+        
+        # Fetch the latest profile data from 'profiles' table
+        profile_response = (
+            supabase.table("profiles")
+            .select("username, avatar_url")
+            .eq("id", auth_response.user.id)
+            .single()
+            .execute()
+        )
+        
+        if profile_response.data:
+            # Merge profile data into user_metadata for the frontend
+            if "user_metadata" not in user_data or user_data["user_metadata"] is None:
+                user_data["user_metadata"] = {}
+            
+            user_data["user_metadata"]["username"] = profile_response.data.get("username")
+            user_data["user_metadata"]["avatar_url"] = profile_response.data.get("avatar_url")
+
         return Token(
             access_token=auth_response.session.access_token,
             token_type="bearer",
             refresh_token=auth_response.session.refresh_token,
-            user=auth_response.user.model_dump(),
+            user=user_data,
         )
 
     except AuthApiError as e:

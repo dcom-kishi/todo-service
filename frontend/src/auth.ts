@@ -31,13 +31,19 @@ declare module "next-auth" {
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.accessToken = user.accessToken;
         token.username = user.username;
         token.avatarUrl = user.avatarUrl;
       }
+      
+      if (trigger === "update" && session) {
+        token.username = session.username || token.username;
+        token.avatarUrl = session.avatarUrl || token.avatarUrl;
+      }
+      
       return token;
     },
     async session({ session, token }) {
@@ -73,12 +79,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           if (res.ok && data.access_token) {
             // Map backend response (snake_case) to our User model (camelCase)
+            const user = data.user;
+            const metadata = user.user_metadata || user.raw_user_meta_data || {};
+            
             return {
-              id: data.user.id,
-              email: data.user.email,
+              id: user.id,
+              email: user.email,
               accessToken: data.access_token,
-              username: data.user.user_metadata?.username,
-              avatarUrl: data.user.user_metadata?.avatar_url,
+              username: metadata.username || user.username,
+              avatarUrl: metadata.avatar_url || user.avatar_url,
             };
           }
           return null;

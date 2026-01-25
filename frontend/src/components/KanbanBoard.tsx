@@ -137,8 +137,8 @@ export default function KanbanBoard() {
   const handleCreateTask = async (values: TaskFormValues) => {
     setIsPending(true);
     const result = await createTaskAction(values);
-    if (result.success) {
-      await fetchTasks();
+    if (result.success && result.data) {
+      setTasks((prev) => [...prev, result.data as Task]);
       setIsModalOpen(false);
     }
     setIsPending(false);
@@ -148,8 +148,10 @@ export default function KanbanBoard() {
     if (!editingTask) return;
     setIsPending(true);
     const result = await updateTaskAction(editingTask.id, values);
-    if (result.success) {
-      await fetchTasks();
+    if (result.success && result.data) {
+      setTasks((prev) =>
+        prev.map((t) => (t.id === editingTask.id ? (result.data as Task) : t))
+      );
       setIsModalOpen(false);
       setEditingTask(null);
     }

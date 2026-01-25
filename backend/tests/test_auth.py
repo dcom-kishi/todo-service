@@ -60,8 +60,9 @@ class TestAuth:
         # Verify that sign_up was called with a default avatar URL
         call_args = mock_supabase_admin.auth.sign_up.call_args[0][0]
         assert "avatar_url" in call_args["options"]["data"]
-        assert "dicebear.com" in call_args["options"]["data"]["avatar_url"]
-        assert "test@example.com" in call_args["options"]["data"]["avatar_url"]
+        avatar_url = call_args["options"]["data"]["avatar_url"]
+        assert "dicebear.com" in avatar_url
+        assert "test%40example.com" in avatar_url
 
     def test_signup_password_validation_errors(self, client):
         # Case 1: Too short

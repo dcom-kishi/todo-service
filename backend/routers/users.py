@@ -55,6 +55,13 @@ def update_user_me(
             profile_attrs["avatar_url"] = user_update.avatar_url
 
         if profile_attrs:
+            # Update user_metadata in Auth to keep it in sync
+            # This is important because the frontend session often relies on user_metadata
+            supabase_admin.auth.admin.update_user_by_id(
+                str(current_user.id),
+                {"user_metadata": profile_attrs}
+            )
+
             # Fetch updated data from DB to get the server-side updated_at
             response = (
                 supabase_admin.table("profiles")

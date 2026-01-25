@@ -21,9 +21,11 @@ export async function updateProfileAction(values: UserUpdateValues) {
     const headers = await getAuthHeader();
     
     // パスワードが空文字列の場合は送信しない
-    const payload = { ...values };
+    const payload: any = { ...values };
     if (!payload.password) delete payload.password;
-    if (!payload.avatar_url) delete payload.avatar_url;
+    
+    // avatar_url が undefined の場合のみ削除（nullや空文字は許可）
+    if (payload.avatar_url === undefined) delete payload.avatar_url;
 
     const res = await fetch(`${API_V1_URL}/users/me`, {
       method: "PUT",

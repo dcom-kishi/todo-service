@@ -8,6 +8,7 @@ import { updateProfileAction, deleteAccountAction } from "@/actions/user";
 import { logoutAction } from "@/actions/auth";
 import { Button, Input, Label } from "./ui";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface ProfileFormProps {
   user: {
@@ -19,6 +20,7 @@ interface ProfileFormProps {
 
 export default function ProfileForm({ user }: ProfileFormProps) {
   const router = useRouter();
+  const { update } = useSession();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
@@ -43,16 +45,24 @@ export default function ProfileForm({ user }: ProfileFormProps) {
     setSuccess(null);
     setIsPending(true);
 
-    try {
-      const result = await updateProfileAction(data);
-      if (result.error) {
-        setError(result.error);
-      } else {
-        setSuccess("Profile updated successfully!");
-        router.refresh();
-      }
-    } catch (err) {
-      setError("An unexpected error occurred.");
+        try {
+          const result = await updateProfileAction(data);
+          if (result.error) {
+            setError(result.error);
+          } else {
+            // セッションを即座に更新（新しいデータを渡す）
+            if (result.user) {
+              await update({
+                username: result.user.username,
+                avatarUrl: result.user.avatar_url,
+              });
+            }
+
+            setSuccess("Profile updated successfully!");
+            router.refresh();
+          }
+        } catch (err) {
+          setError("An unexpected error occurred.");
     } finally {
       setIsPending(false);
     }
@@ -118,26 +128,26 @@ export default function ProfileForm({ user }: ProfileFormProps) {
           Once you delete your account, there is no going back. Please be certain.
         </p>
         {!showDeleteConfirm ? (
-          <Button 
-            variant="outline" 
-            className="border-red-200 text-red-600 hover:bg-red-50" 
-            onClick={() => setShowDeleteConfirm(true)} 
+          <Button
+            variant="outline"
+            className="border-red-200 text-red-600 hover:bg-red-50"
+            onClick={() => setShowDeleteConfirm(true)}
             disabled={isPending}
           >
             Delete Account
           </Button>
         ) : (
           <div className="flex items-center gap-4 animate-in fade-in slide-in-from-top-1">
-            <Button 
-              className="bg-red-600 hover:bg-red-700 text-white" 
-              onClick={handleDeleteAccount} 
+            <Button
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={handleDeleteAccount}
               disabled={isPending}
             >
               {isPending ? "Deleting..." : "Confirm Deletion"}
             </Button>
-            <Button 
-              variant="ghost" 
-              onClick={() => setShowDeleteConfirm(false)} 
+            <Button
+              variant="ghost"
+              onClick={() => setShowDeleteConfirm(false)}
               disabled={isPending}
             >
               Cancel

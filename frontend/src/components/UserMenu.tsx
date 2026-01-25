@@ -2,10 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { User } from "next-auth";
 import { logoutAction } from "@/actions/auth";
-import { Button } from "./ui";
-import { User as UserIcon, LayoutDashboard, LogOut, Ban } from "lucide-react";
+import { User as UserIcon, LayoutDashboard, LogOut, Wrench } from "lucide-react";
 
 interface UserMenuProps {
   user: {
@@ -58,7 +56,7 @@ export default function UserMenu({ user }: UserMenuProps) {
           <div className="px-4 py-2 border-b border-gray-50">
             <p className="text-xs text-gray-500 truncate">{user.email}</p>
           </div>
-          
+
           <Link
             href="/tasks"
             className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -67,7 +65,7 @@ export default function UserMenu({ user }: UserMenuProps) {
             <LayoutDashboard size={16} className="text-gray-400" />
             Tasks
           </Link>
-          
+
           <Link
             href="/profile"
             className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -82,8 +80,8 @@ export default function UserMenu({ user }: UserMenuProps) {
             className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
             onClick={() => setIsOpen(false)}
           >
-            <Ban size={16} className="text-gray-400" />
-            Abort
+            <Wrench size={16} className="text-gray-400" />
+            Dev Tools
           </Link>
 
           <div className="border-t border-gray-50 mt-1">

@@ -63,7 +63,8 @@ class TestUsers:
         assert response.status_code == 200
         assert response.json()["username"] == "new_username"
         assert response.json()["updated_at"] is not None
-        mock_supabase_admin.auth.admin.update_user_by_id.assert_called_once()
+        # Called twice: once for password, once for username (user_metadata)
+        assert mock_supabase_admin.auth.admin.update_user_by_id.call_count == 2
 
     def test_update_user_me_partial_success(
         self, client, mock_supabase_admin, mock_user_profile
@@ -95,7 +96,8 @@ class TestUsers:
         )
         assert response.json()["username"] == mock_user_profile.username
         assert response.json()["updated_at"] is not None
-        mock_supabase_admin.auth.admin.update_user_by_id.assert_not_called()
+        # Called once for user_metadata update
+        mock_supabase_admin.auth.admin.update_user_by_id.assert_called_once()
 
     def test_update_user_me_validation_error(self, client, mock_user_profile):
         # Invalid password (no symbol)
