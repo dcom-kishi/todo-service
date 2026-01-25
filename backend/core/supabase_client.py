@@ -1,5 +1,7 @@
-from supabase import create_client, Client
+from supabase import Client, create_client
+
 from .config import settings
+
 
 def get_supabase_admin() -> Client:
     if not settings.SUPABASE_SERVICE_ROLE_KEY:
