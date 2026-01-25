@@ -47,8 +47,7 @@ class TestUsers:
         def table_side_effect(table_name):
             mock_builder = MagicMock()
             if table_name == "profiles":
-                mock_builder.update.return_value = mock_builder
-                mock_builder.eq.return_value = mock_builder
+                mock_builder.upsert.return_value = mock_builder
                 mock_builder.execute.return_value = MagicMock(data=[updated_data])
             return mock_builder
 
@@ -63,8 +62,8 @@ class TestUsers:
         assert response.status_code == 200
         assert response.json()["username"] == "new_username"
         assert response.json()["updated_at"] is not None
-        # Called twice: once for password, once for username (user_metadata)
-        assert mock_supabase_admin.auth.admin.update_user_by_id.call_count == 2
+        # Called once for combined password and username (user_metadata) update
+        mock_supabase_admin.auth.admin.update_user_by_id.assert_called_once()
 
     def test_update_user_me_partial_success(
         self, client, mock_supabase_admin, mock_user_profile
@@ -80,12 +79,12 @@ class TestUsers:
         def table_side_effect(table_name):
             mock_builder = MagicMock()
             if table_name == "profiles":
-                mock_builder.update.return_value = mock_builder
-                mock_builder.eq.return_value = mock_builder
+                mock_builder.upsert.return_value = mock_builder
                 mock_builder.execute.return_value = MagicMock(data=[updated_data])
             return mock_builder
 
         mock_supabase_admin.table.side_effect = table_side_effect
+        mock_supabase_admin.auth.admin.update_user_by_id.return_value = MagicMock()
 
         payload = {"avatar_url": "http://example.com/brand_new_avatar.png"}
         response = client.put("/api/v1/users/me", json=payload)
