@@ -1,9 +1,12 @@
 <mxfile host="65bd71144e">
     <diagram id="todo-service-detailed-arch" name="Todo Service Detailed Architecture">
-        <mxGraphModel dx="1714" dy="487" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+        <mxGraphModel dx="1720" dy="591" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
+                <mxCell id="23" value="" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="60" width="1100" height="440" as="geometry"/>
+                </mxCell>
                 <mxCell id="layer_backend" value="Backend Layer (FastAPI API)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;startSize=23;" parent="1" vertex="1">
                     <mxGeometry x="580" y="80" width="240" height="400" as="geometry"/>
                 </mxCell>
