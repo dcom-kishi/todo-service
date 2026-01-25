@@ -54,21 +54,29 @@ def update_user_me(
             profile_attrs["avatar_url"] = user_update.avatar_url
             
         if profile_attrs:
-            profile_attrs["updated_at"] = "now()"
-            supabase_admin.table("profiles").update(profile_attrs).eq("id", current_user.id).execute()
+            # Fetch updated data from DB to get the server-side updated_at
+            response = supabase_admin.table("profiles") \
+                .update(profile_attrs) \
+                .eq("id", current_user.id) \
+                .execute()
+            
+            if response.data:
+                updated_profile = response.data[0]
+                return UserProfile(
+                    id=current_user.id,
+                    email=user_update.email if user_update.email else current_user.email,
+                    username=updated_profile.get("username"),
+                    avatar_url=updated_profile.get("avatar_url"),
+                    updated_at=updated_profile.get("updated_at")
+                )
 
-        # 3. Return updated profile (Avoid redundant DB query if possible)
-        # Email comes from user_update or current_user
-        email = user_update.email if user_update.email else current_user.email
-        username = user_update.username if user_update.username is not None else current_user.username
-        avatar_url = user_update.avatar_url if user_update.avatar_url is not None else current_user.avatar_url
-        
+        # 3. Return updated profile (If no profile fields were changed but auth fields were)
         return UserProfile(
             id=current_user.id,
-            email=email,
-            username=username,
-            avatar_url=avatar_url,
-            updated_at=None # We could fetch it, but it might be optional
+            email=user_update.email if user_update.email else current_user.email,
+            username=current_user.username,
+            avatar_url=current_user.avatar_url,
+            updated_at=current_user.updated_at
         )
 
     except AuthApiError as e:

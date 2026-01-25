@@ -42,11 +42,7 @@ class TestUsers:
             if table_name == "profiles":
                 mock_builder.update.return_value = mock_builder
                 mock_builder.eq.return_value = mock_builder
-                mock_builder.execute.return_value = MagicMock()
-                
-                mock_builder.select.return_value = mock_builder
-                mock_builder.single.return_value = mock_builder
-                mock_builder.execute.return_value = MagicMock(data=updated_data)
+                mock_builder.execute.return_value = MagicMock(data=[updated_data])
             return mock_builder
 
         mock_supabase_admin.table.side_effect = table_side_effect
@@ -62,7 +58,37 @@ class TestUsers:
         # Assert
         assert response.status_code == 200
         assert response.json()["username"] == "new_username"
+        assert response.json()["updated_at"] is not None
         mock_supabase_admin.auth.admin.update_user_by_id.assert_called_once()
+
+    def test_update_user_me_partial_success(self, client, mock_supabase_admin, mock_user_profile):
+        # Update only avatar_url
+        updated_data = {
+            "id": str(mock_user_profile.id),
+            "username": mock_user_profile.username,
+            "avatar_url": "http://example.com/brand_new_avatar.png",
+            "updated_at": "2026-01-23T12:05:00Z"
+        }
+        def table_side_effect(table_name):
+            mock_builder = MagicMock()
+            if table_name == "profiles":
+                mock_builder.update.return_value = mock_builder
+                mock_builder.eq.return_value = mock_builder
+                mock_builder.execute.return_value = MagicMock(data=[updated_data])
+            return mock_builder
+
+        mock_supabase_admin.table.side_effect = table_side_effect
+        
+        payload = {
+            "avatar_url": "http://example.com/brand_new_avatar.png"
+        }
+        response = client.put("/api/v1/users/me", json=payload)
+
+        assert response.status_code == 200
+        assert response.json()["avatar_url"] == "http://example.com/brand_new_avatar.png"
+        assert response.json()["username"] == mock_user_profile.username
+        assert response.json()["updated_at"] is not None
+        mock_supabase_admin.auth.admin.update_user_by_id.assert_not_called()
 
     def test_update_user_me_validation_error(self, client, mock_user_profile):
         # Invalid password (no symbol)
