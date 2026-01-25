@@ -76,6 +76,17 @@ describe('User Actions', () => {
       expect(result.error).toBe('Internal server error.');
     });
 
+    it('returns default error message when API returns non-JSON error', async () => {
+      fetchMock.mockResolvedValue({
+        ok: false,
+        json: async () => { throw new Error('Not JSON'); },
+      });
+
+      const result = await updateProfileAction({ username: 'newname' });
+
+      expect(result.error).toBe('Update failed.');
+    });
+
     it('returns error when unauthorized', async () => {
       mockAuth.mockResolvedValue(null);
 
@@ -114,6 +125,17 @@ describe('User Actions', () => {
       const result = await deleteAccountAction();
 
       expect(result.error).toBe('Cannot delete account');
+    });
+
+    it('returns default error message when API returns non-JSON error on deletion', async () => {
+      fetchMock.mockResolvedValue({
+        ok: false,
+        json: async () => { throw new Error('Not JSON'); },
+      });
+
+      const result = await deleteAccountAction();
+
+      expect(result.error).toBe('Deletion failed.');
     });
   });
 });
