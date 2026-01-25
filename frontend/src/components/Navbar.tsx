@@ -18,6 +18,16 @@ export default async function Navbar() {
           <div className="flex items-center gap-4">
             {session ? (
               <>
+                <Link href="/profile" className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+                  {session.user.avatarUrl ? (
+                    <img src={session.user.avatarUrl} alt={session.user.username || "User"} className="w-8 h-8 rounded-full border border-gray-200" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                      {(session.user.username || session.user.email || "?").charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <span className="hidden sm:inline">Profile</span>
+                </Link>
                 <span className="text-sm text-gray-700">
                   Hi, <span className="font-medium">{session.user.username || session.user.email}</span>
                 </span>

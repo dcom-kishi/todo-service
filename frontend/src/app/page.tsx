@@ -1,38 +1,124 @@
+import { auth } from "@/auth";
+import Link from "next/link";
+import { Button, Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
+
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
+  const session = await auth();
+  
   // For this Docker environment, we want to prioritize the service name
   const fetchUrl = typeof window === 'undefined' ? 'http://backend:8000' : (process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000');
 
-  let data = "Loading...";
+  let backendData = "Loading...";
   try {
     const res = await fetch(`${fetchUrl}/api/v1/hello-supabase`, { cache: 'no-store' });
     const json = await res.json();
-    data = json.data;
+    backendData = json.data;
   } catch (error) {
     console.error("Failed to fetch from backend:", error);
-    data = "Error connecting to Backend";
+    backendData = "Error connecting to Backend";
   }
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <h1 className="text-4xl font-bold italic text-blue-600">
-          Todo Service
-        </h1>
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto space-y-12">
+        <header className="text-center">
+          <h1 className="text-5xl font-extrabold text-blue-600 tracking-tight mb-4">
+            Todo Service
+          </h1>
+          <p className="text-xl text-gray-600">
+            A secure, modern task management system powered by FastAPI and Next.js.
+          </p>
+        </header>
 
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Message from Supabase via Backend API:</p>
-          <p className="text-2xl font-mono text-green-500">{data}</p>
+        {session ? (
+          <Card className="bg-white overflow-hidden shadow-xl border-0">
+            <div className="md:flex">
+              <div className="md:shrink-0 bg-blue-600 flex items-center justify-center p-8 md:w-48">
+                {session.user.avatarUrl ? (
+                  <img src={session.user.avatarUrl} alt={session.user.username || "User"} className="w-24 h-24 rounded-full border-4 border-white/20 shadow-lg" />
+                ) : (
+                  <div className="w-24 h-24 rounded-full bg-white/20 flex items-center justify-center text-4xl text-white font-bold border-4 border-white/10 shadow-lg">
+                    {(session.user.username || session.user.email || "?").charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </div>
+              <div className="p-8 w-full">
+                <div className="uppercase tracking-wide text-sm text-blue-600 font-semibold">Welcome back,</div>
+                <h2 className="block mt-1 text-3xl leading-tight font-bold text-black">
+                  {session.user.username || "User"}
+                </h2>
+                <p className="mt-2 text-gray-500">
+                  You are logged in as <span className="font-medium text-gray-900">{session.user.email}</span>.
+                </p>
+                <div className="mt-6 flex gap-4">
+                  <Link href="/profile">
+                    <Button variant="outline">Edit Profile</Button>
+                  </Link>
+                  <Button disabled className="opacity-50">View Tasks (Coming Soon)</Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+        ) : (
+          <Card className="p-12 text-center bg-white shadow-xl border-0">
+            <h2 className="text-3xl font-bold mb-6 text-gray-900">Get Started with Todo Service</h2>
+            <p className="text-gray-600 mb-8 max-w-lg mx-auto">
+              Manage your daily tasks efficiently with our secure platform.
+              Sign up today to start organizing your life.
+            </p>
+            <div className="flex justify-center gap-4">
+              <Link href="/login">
+                <Button size="lg" variant="outline" className="px-8">Login</Button>
+              </Link>
+              <Link href="/signup">
+                <Button size="lg" className="px-8 bg-blue-600 hover:bg-blue-700 text-white">Sign Up</Button>
+              </Link>
+            </div>
+          </Card>
+        )}
+
+        <div className="grid md:grid-cols-2 gap-8">
+          <Card className="bg-white border-blue-100">
+            <CardHeader>
+              <CardTitle className="text-blue-600">Backend Status</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-500 mb-2">Message from Supabase via Backend API:</p>
+              <div className="p-4 bg-green-50 rounded border border-green-100">
+                <p className="text-xl font-mono text-green-600 font-bold">{backendData}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white border-gray-100">
+            <CardHeader>
+              <CardTitle>System Architecture</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  Frontend: Next.js 15 (App Router)
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  Backend: FastAPI (Python 3.13)
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  Database: Supabase (PostgreSQL)
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  Auth: NextAuth.js v5
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
         </div>
-
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Backend: FastAPI
-          </li>
-          <li>Database: Supabase (PostgreSQL)</li>
-        </ol>
-      </main>
+      </div>
     </div>
   );
 }
