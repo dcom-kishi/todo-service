@@ -34,6 +34,36 @@ class TestAuth:
             "user_id": user_id,
         }
 
+    def test_signup_default_avatar(self, client, mock_supabase_admin):
+        # Setup Mock
+        user_id = str(uuid4())
+        mock_user = MagicMock()
+        mock_user.id = user_id
+        mock_auth_response = MagicMock()
+        mock_auth_response.user = mock_user
+        mock_supabase_admin.auth.sign_up.return_value = mock_auth_response
+        mock_postgrest_builder = MagicMock()
+        mock_supabase_admin.table.return_value = mock_postgrest_builder
+        mock_postgrest_builder.upsert.return_value = mock_postgrest_builder
+        mock_postgrest_builder.execute.return_value = MagicMock(data=[{"id": user_id}])
+
+        # Execute without avatar_url
+        payload = {
+            "email": "test@example.com",
+            "password": "Password123!",
+            "username": "testuser"
+        }
+        response = client.post("/api/v1/auth/signup", json=payload)
+
+        # Assert
+        assert response.status_code == 201
+        # Verify that sign_up was called with a default avatar URL
+        call_args = mock_supabase_admin.auth.sign_up.call_args[0][0]
+        assert "avatar_url" in call_args["options"]["data"]
+        avatar_url = call_args["options"]["data"]["avatar_url"]
+        assert "dicebear.com" in avatar_url
+        assert "test%40example.com" in avatar_url
+
     def test_signup_password_validation_errors(self, client):
         # Case 1: Too short
         response = client.post(

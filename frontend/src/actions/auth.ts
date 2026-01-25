@@ -13,7 +13,7 @@ export async function loginAction(formData: FormData) {
     await signIn("credentials", {
       email,
       password,
-      redirectTo: "/",
+      redirectTo: "/tasks",
     });
   } catch (error) {
     if (error instanceof AuthError) {

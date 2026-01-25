@@ -46,7 +46,7 @@ describe('Auth Actions', () => {
       expect(mockSignIn).toHaveBeenCalledWith('credentials', {
         email: 'test@example.com',
         password: 'password123',
-        redirectTo: '/',
+        redirectTo: '/tasks',
       });
     });
   });
@@ -60,11 +60,24 @@ describe('Auth Actions', () => {
 
       const result = await signupAction({
         email: 'test@example.com',
-        password: 'password123',
+        password: 'Password123!',
         username: 'testuser',
       });
 
       expect(result).toEqual({ success: true });
+      expect(fetchMock).toHaveBeenCalledWith(
+        expect.stringContaining('/auth/signup'),
+        expect.objectContaining({
+          method: 'POST',
+          body: expect.stringContaining('"username":"testuser"'),
+        })
+      );
+      expect(fetchMock).not.toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          body: expect.stringContaining('"avatar_url"'),
+        })
+      );
     });
   });
 
