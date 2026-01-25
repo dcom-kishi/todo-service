@@ -13,7 +13,7 @@ export async function loginAction(formData: FormData) {
     await signIn("credentials", {
       email,
       password,
-      redirectTo: "/",
+      redirectTo: "/tasks",
     });
   } catch (error) {
     if (error instanceof AuthError) {
@@ -30,10 +30,14 @@ export async function loginAction(formData: FormData) {
 
 export async function signupAction(values: SignupFormValues) {
   try {
+    // ユーザー名をシードにしてランダムなアバターURLを生成
+    const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(values.username)}`;
+    const payload = { ...values, avatar_url: avatarUrl };
+
     const res = await fetch(`${API_V1_URL}/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
+      body: JSON.stringify(payload),
     });
 
     const data = await res.json();

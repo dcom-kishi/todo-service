@@ -54,7 +54,9 @@ export default async function Home() {
                   <Link href="/profile">
                     <Button variant="outline">Edit Profile</Button>
                   </Link>
-                  <Button disabled className="opacity-50">View Tasks (Coming Soon)</Button>
+                  <Link href="/tasks">
+                    <Button className="bg-blue-600 hover:bg-blue-700 text-white">Go to Tasks</Button>
+                  </Link>
                 </div>
               </div>
             </div>

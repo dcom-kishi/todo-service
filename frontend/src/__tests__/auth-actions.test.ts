@@ -46,13 +46,13 @@ describe('Auth Actions', () => {
       expect(mockSignIn).toHaveBeenCalledWith('credentials', {
         email: 'test@example.com',
         password: 'password123',
-        redirectTo: '/',
+        redirectTo: '/tasks',
       });
     });
   });
 
   describe('signupAction', () => {
-    it('returns success when API call is successful', async () => {
+    it('returns success and generates random avatar URL', async () => {
       fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({ id: '1' }),
@@ -60,11 +60,18 @@ describe('Auth Actions', () => {
 
       const result = await signupAction({
         email: 'test@example.com',
-        password: 'password123',
+        password: 'Password123!',
         username: 'testuser',
       });
 
       expect(result).toEqual({ success: true });
+      expect(fetchMock).toHaveBeenCalledWith(
+        expect.stringContaining('/auth/signup'),
+        expect.objectContaining({
+          method: 'POST',
+          body: expect.stringContaining('"avatar_url":"https://api.dicebear.com/7.x/avataaars/svg?seed=testuser"'),
+        })
+      );
     });
   });
 

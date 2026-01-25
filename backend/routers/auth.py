@@ -21,7 +21,7 @@ router = APIRouter(
 def signup(user_in: UserCreate, supabase: Client = Depends(get_supabase_admin)):
     try:
         # 1. Sign up user in Supabase Auth
-        avatar_url = user_in.avatar_url or settings.DEFAULT_AVATAR_URL
+        avatar_url = user_in.avatar_url or f"https://api.dicebear.com/7.x/avataaars/svg?seed={user_in.email}"
 
         auth_response = supabase.auth.sign_up(
             {
