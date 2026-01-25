@@ -1,8 +1,8 @@
-# プロジェクト発表資料案: todo-kanban (旧 todo-service)
+# プロジェクト発表資料案: AI を活用したアプリケーション開発
 
 ## 1. 要素技術
 
-本プロジェクトは、**AI-DLC (AI Development Life Cycle)** と **Spec-Driven Development (SDD: 仕様駆動開発)** を核とした、AIネイティブな開発手法で構築されています。
+[本プロジェクト](https://github.com/dcom-kishi/todo-service)は、**AI-DLC (AI Development Life Cycle)** と **Spec-Driven Development (SDD: 仕様駆動開発)** を核とした、AIネイティブな開発手法で構築されています。
 
 ### リポジトリへの導入方法 (Setup)
 
@@ -34,22 +34,6 @@
   5. 承認されたタスクに基づき `/kiro:spec-impl` でコード生成。
 
 - **モノレポ構成**: フロントエンド、バックエンド、インフラ（Supabase）を一つのリポジトリで管理し、型定義やドキュメントの整合性を保つ。
-
-### 主要コマンド
-
-```bash
-# 開発環境の起動 (Docker)
-docker-compose up -d
-
-# Supabase ローカル環境の起動
-supabase start
-
-# フロントエンド開発サーバー
-cd frontend && npm run dev
-
-# バックエンド開発サーバー
-cd backend && uv run uvicorn main:app --reload
-```
 
 ## 2. このリポジトリの構成
 
@@ -83,7 +67,7 @@ graph LR
 - `.kiro/`: 仕様書（Requirements, Design, Tasks）
 - `.github/`: Issue/PR テンプレートと CI/CD
 
-## 3. gemini-cli を使用して実装を進めるときの注意点
+## 3. AI を使用して実装を進めるときのポイント
 
 AI（Gemini CLI）との協調開発において、品質と速度を両立させるためのポイントです。
 
@@ -102,3 +86,8 @@ AI（Gemini CLI）との協調開発において、品質と速度を両立さ�
 - **メリット**: 小規模な修正や、定義済みのタスクを高速に消化する際に極めて快適。
 - **制限事項とリスク**: 大規模なリファクタリングやアーキテクチャに関わる変更を YOLO Mode で行うと、AI がコンテキストを誤認した際に修正が困難になる場合があります。
 - **推奨**: 重要なフェーズ（Phase 1: 仕様策定）は対話形式で行い、Phase 2（実装）の定型タスクにおいて YOLO Mode を活用するのが最適です。
+
+### 4. GitHub と Gemini Code Assist 連携によるコードレビュー
+
+- **自動レビューの活用**: GitHub リポジトリに Gemini Code Assist を連携させることで、プルリクエスト作成時に AI による自動コードレビューを受けることができます。
+- **品質のチェック**: Gemini CLI による実装と、GitHub 上での Gemini によるレビューという「AI チェック」により、より確実にバグの混入を防ぎ、コード品質を向上させます。
