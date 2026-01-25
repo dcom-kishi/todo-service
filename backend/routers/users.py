@@ -40,7 +40,8 @@ def update_user_me(
             auth_attrs["password"] = user_update.password
 
         if auth_attrs:
-            # We use admin client because we don't have user session (access+refresh token) here.
+            # We use admin client because we don't have user session
+            # (access+refresh token) here.
             # Only access token is available from get_current_user dependency.
             supabase_admin.auth.admin.update_user_by_id(
                 str(current_user.id), auth_attrs
@@ -74,7 +75,8 @@ def update_user_me(
                     updated_at=updated_profile.get("updated_at"),
                 )
 
-        # 3. Return updated profile (If no profile fields were changed but auth fields were)
+        # 3. Return updated profile (If no profile fields were changed but auth
+        # fields were)
         return UserProfile(
             id=current_user.id,
             email=user_update.email if user_update.email else current_user.email,

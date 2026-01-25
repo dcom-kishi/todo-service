@@ -45,7 +45,8 @@ def signup(user_in: UserCreate, supabase: Client = Depends(get_supabase_admin)):
             "avatar_url": avatar_url,
         }
 
-        # We use upsert=True just in case a trigger already created it to avoid race conditions
+        # We use upsert=True just in case a trigger already created it
+        # to avoid race conditions
         supabase.table("profiles").upsert(profile_data).execute()
 
         return SignupResponse(message="User created successfully", user_id=user_id)

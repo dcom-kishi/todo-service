@@ -39,9 +39,8 @@ class TestTasks:
             "updated_at": "2026-01-25T10:00:00+00:00",
         }
 
-        mock_supabase_admin.table.return_value.insert.return_value.execute.return_value = MagicMock(
-            data=[mock_task]
-        )
+        mock_insert = mock_supabase_admin.table.return_value.insert.return_value
+        mock_insert.execute.return_value = MagicMock(data=[mock_task])
 
         payload = {"title": "New Task", "description": "Task Description"}
         response = client.post("/api/v1/tasks/", json=payload)
@@ -72,9 +71,10 @@ class TestTasks:
             },
         ]
 
-        mock_supabase_admin.table.return_value.select.return_value.eq.return_value.order.return_value.execute.return_value = MagicMock(  # noqa: E501
-            data=mock_tasks
+        mock_query = (
+            mock_supabase_admin.table.return_value.select.return_value.eq.return_value.order.return_value
         )
+        mock_query.execute.return_value = MagicMock(data=mock_tasks)
 
         response = client.get("/api/v1/tasks/")
 
@@ -83,9 +83,10 @@ class TestTasks:
         assert response.json()[0]["title"] == "T1"
 
     def test_read_task_not_found(self, client, mock_supabase_admin):
-        mock_supabase_admin.table.return_value.select.return_value.eq.return_value.eq.return_value.single.return_value.execute.return_value = MagicMock(
-            data=None
+        mock_query = (
+            mock_supabase_admin.table.return_value.select.return_value.eq.return_value.eq.return_value.single.return_value
         )
+        mock_query.execute.return_value = MagicMock(data=None)
 
         response = client.get(f"/api/v1/tasks/{uuid4()}")
 
@@ -103,9 +104,10 @@ class TestTasks:
             "updated_at": "2026-01-25T11:00:00",
         }
 
-        mock_supabase_admin.table.return_value.update.return_value.eq.return_value.eq.return_value.execute.return_value = MagicMock(
-            data=[updated_task]
+        mock_update = (
+            mock_supabase_admin.table.return_value.update.return_value.eq.return_value.eq.return_value
         )
+        mock_update.execute.return_value = MagicMock(data=[updated_task])
 
         payload = {"title": "Updated Title", "status": "IN_PROGRESS"}
         response = client.put(f"/api/v1/tasks/{task_id}", json=payload)
@@ -116,9 +118,10 @@ class TestTasks:
 
     def test_update_task_not_found_or_not_owned(self, client, mock_supabase_admin):
         # Simulate no rows updated (either ID not found or user_id mismatch)
-        mock_supabase_admin.table.return_value.update.return_value.eq.return_value.eq.return_value.execute.return_value = MagicMock(
-            data=[]
+        mock_update = (
+            mock_supabase_admin.table.return_value.update.return_value.eq.return_value.eq.return_value
         )
+        mock_update.execute.return_value = MagicMock(data=[])
 
         payload = {"title": "Attempt Update"}
         response = client.put(f"/api/v1/tasks/{uuid4()}", json=payload)
@@ -133,9 +136,10 @@ class TestTasks:
         assert response.json()["detail"] == "No fields to update provided."
 
     def test_reorder_tasks(self, client, mock_supabase_admin, mock_user_id):
-        mock_supabase_admin.table.return_value.update.return_value.eq.return_value.eq.return_value.execute.return_value = MagicMock(
-            data=[{"id": str(uuid4())}]
+        mock_update = (
+            mock_supabase_admin.table.return_value.update.return_value.eq.return_value.eq.return_value
         )
+        mock_update.execute.return_value = MagicMock(data=[{"id": str(uuid4())}])
 
         payload = {
             "items": [
@@ -151,9 +155,10 @@ class TestTasks:
 
     def test_delete_task(self, client, mock_supabase_admin):
         task_id = uuid4()
-        mock_supabase_admin.table.return_value.delete.return_value.eq.return_value.eq.return_value.execute.return_value = MagicMock(
-            data=[{"id": str(task_id)}]
+        mock_delete = (
+            mock_supabase_admin.table.return_value.delete.return_value.eq.return_value.eq.return_value
         )
+        mock_delete.execute.return_value = MagicMock(data=[{"id": str(task_id)}])
 
         response = client.delete(f"/api/v1/tasks/{task_id}")
 

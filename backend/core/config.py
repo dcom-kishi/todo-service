@@ -10,7 +10,8 @@ class Settings(BaseSettings):
     USERNAME_NG_WORDS: list[str] = ["admin", "root", "support"]
 
     # Allow loading from .env files for local development
-    # If variables are already set in environment (like by Docker), they take precedence.
+    # If variables are already set in environment (like by Docker),
+    # they take precedence.
     model_config = SettingsConfigDict(
         env_file=(".env", ".env.local", "../.env", "../.env.local"),
         env_file_encoding="utf-8",

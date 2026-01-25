@@ -63,7 +63,8 @@ def reorder_tasks(
     Bulk update task order indices.
     """
     try:
-        # Note: Supabase doesn't support bulk update with different values in a single call easily via table.update().
+        # Note: Supabase doesn't support bulk update with different values in a
+        # single call easily via table.update().
         # For simplicity and correctness (ensuring user owns the tasks), we iterate.
         # In a real high-load app, we might use a RPC (PostgreSQL function).
         for item in reorder_in.items:
