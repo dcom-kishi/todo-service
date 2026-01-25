@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from core.supabase_client import supabase
+from core.supabase_client import get_supabase_admin
 from routers import auth, users
 
 app = FastAPI()
@@ -28,6 +28,7 @@ def health_check():
 @app.get("/api/v1/hello-supabase")
 def get_hello_from_supabase():
     # Fetch the "Hello World" task from Supabase
+    supabase = get_supabase_admin()
     response = supabase.table("tasks").select("title").eq("title", "Hello World").limit(1).execute()
     if response.data:
         return {"data": response.data[0]["title"]}

@@ -54,7 +54,6 @@ def update_user_me(
             profile_attrs["avatar_url"] = user_update.avatar_url
             
         if profile_attrs:
-            profile_attrs["updated_at"] = "now()"
             supabase_admin.table("profiles").update(profile_attrs).eq("id", current_user.id).execute()
 
         # 3. Return updated profile (Avoid redundant DB query if possible)
