@@ -1,9 +1,12 @@
-from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
-from datetime import datetime
-from uuid import UUID
-from typing import Optional
 import re
+from datetime import datetime
+from typing import Optional
+from uuid import UUID
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+
 from core.config import settings
+
 
 def validate_password_complexity(v: str) -> str:
     # Check for at least one letter, one number, and one symbol
@@ -15,8 +18,10 @@ def validate_password_complexity(v: str) -> str:
         raise ValueError("Password must contain at least one symbol")
     return v
 
+
 class UserBase(BaseModel):
     email: EmailStr
+
 
 class UserCreate(UserBase):
     password: str = Field(min_length=8)
@@ -38,8 +43,10 @@ class UserCreate(UserBase):
                 raise ValueError(f"Username '{v}' is not allowed")
         return v
 
+
 class UserLogin(UserBase):
     password: str
+
 
 class UserUpdate(BaseModel):
     username: Optional[str] = None
@@ -53,6 +60,7 @@ class UserUpdate(BaseModel):
         if v is None:
             return v
         return validate_password_complexity(v)
+
 
 class UserProfile(BaseModel):
     id: UUID

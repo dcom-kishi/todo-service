@@ -1,5 +1,8 @@
 {
     "cSpell.words": [
-        "SUPABASE"
+        "Kiro",
+        "pydantic",
+        "SUPABASE",
+        "uvicorn"
     ]
 }

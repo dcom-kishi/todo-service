@@ -1,9 +1,12 @@
-import pytest
 from unittest.mock import MagicMock
-from core.deps import get_current_user
-from schemas.user import UserProfile
 from uuid import uuid4
+
+import pytest
+
+from core.deps import get_current_user
 from main import app
+from schemas.user import UserProfile
+
 
 @pytest.fixture
 def mock_user_profile():
@@ -11,8 +14,9 @@ def mock_user_profile():
         id=uuid4(),
         email="test@example.com",
         username="existing_user",
-        avatar_url="http://example.com/avatar.png"
+        avatar_url="http://example.com/avatar.png",
     )
+
 
 @pytest.fixture(autouse=True)
 def override_current_user(mock_user_profile):
@@ -20,23 +24,26 @@ def override_current_user(mock_user_profile):
     yield
     app.dependency_overrides.pop(get_current_user, None)
 
+
 class TestUsers:
     def test_get_users_me(self, client, mock_user_profile):
         response = client.get("/api/v1/users/me")
-        
+
         assert response.status_code == 200
         data = response.json()
         assert data["email"] == mock_user_profile.email
         assert data["username"] == mock_user_profile.username
 
-    def test_update_user_me_success(self, client, mock_supabase_admin, mock_user_profile):
+    def test_update_user_me_success(
+        self, client, mock_supabase_admin, mock_user_profile
+    ):
         updated_data = {
             "id": str(mock_user_profile.id),
             "username": "new_username",
             "avatar_url": "http://example.com/new_avatar.png",
-            "updated_at": "2026-01-23T12:00:00Z"
+            "updated_at": "2026-01-23T12:00:00Z",
         }
-        
+
         def table_side_effect(table_name):
             mock_builder = MagicMock()
             if table_name == "profiles":
@@ -49,10 +56,7 @@ class TestUsers:
         mock_supabase_admin.auth.admin.update_user_by_id.return_value = MagicMock()
 
         # Execute
-        payload = {
-            "username": "new_username",
-            "password": "NewValidPassword123!"
-        }
+        payload = {"username": "new_username", "password": "NewValidPassword123!"}
         response = client.put("/api/v1/users/me", json=payload)
 
         # Assert
@@ -61,14 +65,17 @@ class TestUsers:
         assert response.json()["updated_at"] is not None
         mock_supabase_admin.auth.admin.update_user_by_id.assert_called_once()
 
-    def test_update_user_me_partial_success(self, client, mock_supabase_admin, mock_user_profile):
+    def test_update_user_me_partial_success(
+        self, client, mock_supabase_admin, mock_user_profile
+    ):
         # Update only avatar_url
         updated_data = {
             "id": str(mock_user_profile.id),
             "username": mock_user_profile.username,
             "avatar_url": "http://example.com/brand_new_avatar.png",
-            "updated_at": "2026-01-23T12:05:00Z"
+            "updated_at": "2026-01-23T12:05:00Z",
         }
+
         def table_side_effect(table_name):
             mock_builder = MagicMock()
             if table_name == "profiles":
@@ -78,23 +85,21 @@ class TestUsers:
             return mock_builder
 
         mock_supabase_admin.table.side_effect = table_side_effect
-        
-        payload = {
-            "avatar_url": "http://example.com/brand_new_avatar.png"
-        }
+
+        payload = {"avatar_url": "http://example.com/brand_new_avatar.png"}
         response = client.put("/api/v1/users/me", json=payload)
 
         assert response.status_code == 200
-        assert response.json()["avatar_url"] == "http://example.com/brand_new_avatar.png"
+        assert (
+            response.json()["avatar_url"] == "http://example.com/brand_new_avatar.png"
+        )
         assert response.json()["username"] == mock_user_profile.username
         assert response.json()["updated_at"] is not None
         mock_supabase_admin.auth.admin.update_user_by_id.assert_not_called()
 
     def test_update_user_me_validation_error(self, client, mock_user_profile):
         # Invalid password (no symbol)
-        payload = {
-            "password": "NoSymbol123"
-        }
+        payload = {"password": "NoSymbol123"}
         response = client.put("/api/v1/users/me", json=payload)
 
         assert response.status_code == 422
@@ -107,4 +112,6 @@ class TestUsers:
 
         assert response.status_code == 200
         assert response.json()["message"] == "Account deleted successfully"
-        mock_supabase_admin.auth.admin.delete_user.assert_called_once_with(str(mock_user_profile.id))
+        mock_supabase_admin.auth.admin.delete_user.assert_called_once_with(
+            str(mock_user_profile.id)
+        )
