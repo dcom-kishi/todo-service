@@ -1,7 +1,7 @@
 import NextAuth, { type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { API_V1_URL } from "./lib/constants";
 import { authConfig } from "./auth.config";
+import { API_V1_URL } from "./lib/constants";
 
 declare module "next-auth" {
   interface Session {
@@ -9,15 +9,24 @@ declare module "next-auth" {
     user: {
       id: string;
       username?: string;
-      avatar_url?: string;
+      avatarUrl?: string;
     } & DefaultSession["user"];
   }
 
   interface User {
-    access_token?: string;
-    user_id?: string;
+    id: string;
+    accessToken?: string;
     username?: string;
-    avatar_url?: string;
+    avatarUrl?: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+    accessToken?: string;
+    username?: string;
+    avatarUrl?: string;
   }
 }
 
@@ -26,19 +35,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.accessToken = user.access_token;
-        token.id = user.user_id;
+        token.id = user.id;
+        token.accessToken = user.accessToken;
         token.username = user.username;
-        token.avatar_url = user.avatar_url;
+        token.avatarUrl = user.avatarUrl;
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
-        session.accessToken = token.accessToken as string;
-        session.user.id = token.id as string;
-        session.user.username = token.username as string;
-        session.user.avatar_url = token.avatar_url as string;
+        session.user.id = token.id;
+        session.user.username = token.username;
+        session.user.avatarUrl = token.avatarUrl;
+        session.accessToken = token.accessToken;
       }
       return session;
     },
@@ -65,16 +74,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const data = await res.json();
 
           if (res.ok && data.access_token) {
-            // Note: backend returns {access_token, token_type, refresh_token, user: {id, email}}
+            // Map backend response (snake_case) to our User model (camelCase)
             return {
               id: data.user.id,
               email: data.user.email,
-              access_token: data.access_token,
-              user_id: data.user.id,
-              // These might not be in the direct login response if not implemented in BE yet, 
-              // but we add them for future-proofing or if BE already provides them in user object.
-              username: data.user.username,
-              avatar_url: data.user.avatar_url,
+              accessToken: data.access_token,
+              username: data.user.user_metadata?.username,
+              avatarUrl: data.user.user_metadata?.avatar_url,
             };
           }
           return null;

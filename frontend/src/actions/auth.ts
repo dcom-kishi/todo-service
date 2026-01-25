@@ -1,8 +1,9 @@
 "use server";
 
-import { signIn, signOut } from "@/auth";
-import { AuthError } from "next-auth";
-import { API_V1_URL } from "@/lib/constants";
+import { signIn, signOut} from "@/auth";
+import { AuthError} from "next-auth";
+import { API_V1_URL} from "@/lib/constants";
+import { SignupFormValues} from "@/schemas/auth";
 
 export async function loginAction(formData: FormData) {
   const email = formData.get("email") as string;
@@ -27,7 +28,7 @@ export async function loginAction(formData: FormData) {
   }
 }
 
-export async function signupAction(values: any) {
+export async function signupAction(values: SignupFormValues) {
   try {
     const res = await fetch(`${API_V1_URL}/auth/signup`, {
       method: "POST",

@@ -131,8 +131,13 @@ docker-compose up --build -d
 起動後、以下の方法で正常に連携できているか確認します。
 
 1. **ブラウザで確認**:
-   - [http://localhost:3000](http://localhost:3000) にアクセスし、中央のカードに **"Hello World"** と緑文字で表示されていれば成功です。
-2. **コマンドで確認**:
+   - [http://localhost:3000](http://localhost:3000) にアクセスします。
+2. **テストユーザーでのログイン**:
+   - 右上の「Login」ボタンをクリックします。
+   - 以下の認証情報を入力してログインできることを確認してください：
+     - **Email**: `test@example.com`
+     - **Password**: `Password123!`
+3. **コマンドで確認**:
 
    ```powershell
    # Backend 経由での Supabase データ取得確認
@@ -140,7 +145,6 @@ docker-compose up --build -d
    ```
 
    `{"data":"Hello World"}` というレスポンスが返ってくれば正常です。
-
 
 ## 6. テストの実行
 
@@ -158,6 +162,6 @@ uv run python -m pytest
 
 テスト実行時には `backend/tests/test_auth.py` と `backend/tests/test_users.py` が実行され、認証ロジックやバリデーションが正しく機能していることが検証されます。
 
-3. **管理ツール**:
+1. **管理ツール**:
    - **Supabase Studio**: [http://localhost:54323](http://localhost:54323)
      - `Table Editor` から `tasks` テーブルに "Hello World" というデータが入っていることを確認できます。

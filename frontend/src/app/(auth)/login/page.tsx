@@ -41,9 +41,6 @@ export default function LoginPage() {
       const result = await loginAction(formData);
       if (result?.error) {
         setError(result.error);
-      } else {
-        router.push("/");
-        router.refresh();
       }
     } catch (err) {
       setError("An unexpected error occurred.");
