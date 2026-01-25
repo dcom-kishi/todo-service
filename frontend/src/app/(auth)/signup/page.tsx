@@ -1,25 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { signupAction } from "@/actions/auth";
-import { SignupFormValues } from "@/schemas/auth";
+import { signupSchema, type SignupFormValues } from "@/schemas/auth";
 import { Button, Input, Label, Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui";
-
-const signupSchema = z.object({
-  username: z.string().min(1, "Username is required"),
-  email: z.string().email("Invalid email address"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Za-z]/, "Password must contain at least one letter")
-    .regex(/[0-9]/, "Password must contain at least one number")
-    .regex(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one symbol"),
-});
 
 export default function SignupPage() {
   const router = useRouter();
@@ -35,6 +23,15 @@ export default function SignupPage() {
     resolver: zodResolver(signupSchema),
   });
 
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        router.push("/login");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success, router]);
+
   const onSubmit = async (data: SignupFormValues) => {
     setError(null);
     setIsPending(true);
@@ -45,9 +42,6 @@ export default function SignupPage() {
         setError(result.error);
       } else {
         setSuccess(true);
-        setTimeout(() => {
-          router.push("/login");
-        }, 3000);
       }
     } catch (err) {
       setError("An unexpected error occurred.");

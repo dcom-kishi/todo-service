@@ -44,6 +44,7 @@ export async function signupAction(values: SignupFormValues) {
 
     return { success: true };
   } catch (error) {
+    console.error("Signup Action Error:", error);
     return { error: "Internal server error." };
   }
 }
