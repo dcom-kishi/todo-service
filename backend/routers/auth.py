@@ -80,7 +80,8 @@ def login(user_in: UserLogin, supabase: Client = Depends(get_supabase_admin)):
             user=auth_response.user.model_dump(),
         )
 
-    except AuthApiError:
+    except AuthApiError as e:
+        logging.warning(f"Login failed for email {user_in.email}: {e}")
         raise HTTPException(status_code=401, detail="Invalid credentials")
     except HTTPException:
         raise
