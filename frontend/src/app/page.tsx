@@ -1,18 +1,16 @@
 import { auth } from "@/auth";
 import Link from "next/link";
 import { Button, Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
+import { API_V1_URL } from "@/lib/constants";
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const session = await auth();
   
-  // For this Docker environment, we want to prioritize the service name
-  const fetchUrl = typeof window === 'undefined' ? 'http://backend:8000' : (process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000');
-
   let backendData = "Loading...";
   try {
-    const res = await fetch(`${fetchUrl}/api/v1/hello-supabase`, { cache: 'no-store' });
+    const res = await fetch(`${API_V1_URL}/hello-supabase`, { cache: 'no-store' });
     const json = await res.json();
     backendData = json.data;
   } catch (error) {

@@ -55,6 +55,34 @@ describe('User Actions', () => {
       );
       expect(mockRevalidatePath).toHaveBeenCalledWith('/profile');
     });
+
+    it('returns error when API returns an error status', async () => {
+      fetchMock.mockResolvedValue({
+        ok: false,
+        json: async () => ({ detail: 'Invalid username' }),
+      });
+
+      const result = await updateProfileAction({ username: 'invalid' });
+
+      expect(result.success).toBeUndefined();
+      expect(result.error).toBe('Invalid username');
+    });
+
+    it('returns error when fetch fails', async () => {
+      fetchMock.mockRejectedValue(new Error('Network error'));
+
+      const result = await updateProfileAction({ username: 'newname' });
+
+      expect(result.error).toBe('Internal server error.');
+    });
+
+    it('returns error when unauthorized', async () => {
+      mockAuth.mockResolvedValue(null);
+
+      const result = await updateProfileAction({ username: 'newname' });
+
+      expect(result.error).toBe('Internal server error.');
+    });
   });
 
   describe('deleteAccountAction', () => {
@@ -75,6 +103,17 @@ describe('User Actions', () => {
           }),
         })
       );
+    });
+
+    it('returns error when deletion fails', async () => {
+      fetchMock.mockResolvedValue({
+        ok: false,
+        json: async () => ({ detail: 'Cannot delete account' }),
+      });
+
+      const result = await deleteAccountAction();
+
+      expect(result.error).toBe('Cannot delete account');
     });
   });
 });

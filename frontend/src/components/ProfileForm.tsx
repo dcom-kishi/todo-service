@@ -36,6 +36,8 @@ export default function ProfileForm({ user }: ProfileFormProps) {
     },
   });
 
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
   const onSubmit = async (data: UserUpdateValues) => {
     setError(null);
     setSuccess(null);
@@ -57,16 +59,13 @@ export default function ProfileForm({ user }: ProfileFormProps) {
   };
 
   const handleDeleteAccount = async () => {
-    if (!confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-      return;
-    }
-
     setIsPending(true);
     try {
       const result = await deleteAccountAction();
       if (result.error) {
         setError(result.error);
         setIsPending(false);
+        setShowDeleteConfirm(false);
       } else {
         // アカウント削除成功後、ログアウトしてトップへ
         await logoutAction();
@@ -74,6 +73,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
     } catch (err) {
       setError("Failed to delete account.");
       setIsPending(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -117,9 +117,33 @@ export default function ProfileForm({ user }: ProfileFormProps) {
         <p className="text-sm text-gray-500 mb-4">
           Once you delete your account, there is no going back. Please be certain.
         </p>
-        <Button variant="outline" className="border-red-200 text-red-600 hover:bg-red-50" onClick={handleDeleteAccount} disabled={isPending}>
-          Delete Account
-        </Button>
+        {!showDeleteConfirm ? (
+          <Button 
+            variant="outline" 
+            className="border-red-200 text-red-600 hover:bg-red-50" 
+            onClick={() => setShowDeleteConfirm(true)} 
+            disabled={isPending}
+          >
+            Delete Account
+          </Button>
+        ) : (
+          <div className="flex items-center gap-4 animate-in fade-in slide-in-from-top-1">
+            <Button 
+              className="bg-red-600 hover:bg-red-700 text-white" 
+              onClick={handleDeleteAccount} 
+              disabled={isPending}
+            >
+              {isPending ? "Deleting..." : "Confirm Deletion"}
+            </Button>
+            <Button 
+              variant="ghost" 
+              onClick={() => setShowDeleteConfirm(false)} 
+              disabled={isPending}
+            >
+              Cancel
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

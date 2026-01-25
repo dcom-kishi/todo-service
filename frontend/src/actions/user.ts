@@ -31,10 +31,10 @@ export async function updateProfileAction(values: UserUpdateValues) {
       body: JSON.stringify(payload),
     });
 
-    const data = await res.json();
+    const data = await res.json().catch(() => null);
 
     if (!res.ok) {
-      return { error: data.detail || "Update failed." };
+      return { error: data?.detail || "Update failed." };
     }
 
     revalidatePath("/profile");
@@ -55,8 +55,8 @@ export async function deleteAccountAction() {
     });
 
     if (!res.ok) {
-      const data = await res.json();
-      return { error: data.detail || "Deletion failed." };
+      const data = await res.json().catch(() => null);
+      return { error: data?.detail || "Deletion failed." };
     }
 
     // ログアウト処理はクライアント側で行うか、ここでsignOutを呼ぶ
