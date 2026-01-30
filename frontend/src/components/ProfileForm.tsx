@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userUpdateSchema, type UserUpdateValues } from "@/schemas/user";
@@ -9,6 +9,8 @@ import { logoutAction } from "@/actions/auth";
 import { Button, Input, Label } from "./ui";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
+import { Monitor, Moon, Sun } from "lucide-react";
 
 interface ProfileFormProps {
   user: {
@@ -21,9 +23,15 @@ interface ProfileFormProps {
 export default function ProfileForm({ user }: ProfileFormProps) {
   const router = useRouter();
   const { update } = useSession();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const {
     register,
@@ -45,24 +53,24 @@ export default function ProfileForm({ user }: ProfileFormProps) {
     setSuccess(null);
     setIsPending(true);
 
-        try {
-          const result = await updateProfileAction(data);
-          if (result.error) {
-            setError(result.error);
-          } else {
-            // セッションを即座に更新（新しいデータを渡す）
-            if (result.user) {
-              await update({
-                username: result.user.username,
-                avatarUrl: result.user.avatar_url,
-              });
-            }
+    try {
+      const result = await updateProfileAction(data);
+      if (result.error) {
+        setError(result.error);
+      } else {
+        // セッションを即座に更新（新しいデータを渡す）
+        if (result.user) {
+          await update({
+            username: result.user.username,
+            avatarUrl: result.user.avatar_url,
+          });
+        }
 
-            setSuccess("Profile updated successfully!");
-            router.refresh();
-          }
-        } catch (err) {
-          setError("An unexpected error occurred.");
+        setSuccess("Profile updated successfully!");
+        router.refresh();
+      }
+    } catch (err) {
+      setError("An unexpected error occurred.");
     } finally {
       setIsPending(false);
     }
@@ -115,22 +123,67 @@ export default function ProfileForm({ user }: ProfileFormProps) {
         </div>
 
         {error && <p className="text-sm font-medium text-red-500">{error}</p>}
-        {success && <p className="text-sm font-medium text-green-600">{success}</p>}
+        {success && <p className="text-sm font-medium text-green-600 dark:text-green-400">{success}</p>}
 
         <Button type="submit" disabled={isPending}>
           {isPending ? "Updating..." : "Save Changes"}
         </Button>
       </form>
 
-      <div className="pt-6 border-t border-gray-200">
-        <h3 className="text-lg font-medium text-red-600">Danger Zone</h3>
-        <p className="text-sm text-gray-500 mb-4">
+      <div className="pt-6 border-t border-border">
+        <h3 className="text-lg font-medium text-foreground">Appearance</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Choose how Todo Service looks to you.
+        </p>
+        <div className="grid grid-cols-3 gap-4">
+          <button
+            type="button"
+            onClick={() => setTheme("light")}
+            className={`flex flex-col items-center gap-2 p-3 rounded-lg border transition-all ${
+              mounted && theme === "light"
+                ? "border-blue-600 bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:border-blue-500"
+                : "border-border hover:bg-muted text-foreground"
+            }`}
+          >
+            <Sun className="h-5 w-5" />
+            <span className="text-xs font-medium">Light</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setTheme("dark")}
+            className={`flex flex-col items-center gap-2 p-3 rounded-lg border transition-all ${
+              mounted && theme === "dark"
+                ? "border-blue-600 bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:border-blue-500"
+                : "border-border hover:bg-muted text-foreground"
+            }`}
+          >
+            <Moon className="h-5 w-5" />
+            <span className="text-xs font-medium">Dark</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setTheme("system")}
+            className={`flex flex-col items-center gap-2 p-3 rounded-lg border transition-all ${
+              mounted && theme === "system"
+                ? "border-blue-600 bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:border-blue-500"
+                : "border-border hover:bg-muted text-foreground"
+            }`}
+          >
+            <Monitor className="h-5 w-5" />
+            <span className="text-xs font-medium">System</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="pt-6 border-t border-border">
+        <h3 className="text-lg font-medium text-red-600 dark:text-red-400">Danger Zone</h3>
+        <p className="text-sm text-muted-foreground mb-4">
           Once you delete your account, there is no going back. Please be certain.
         </p>
         {!showDeleteConfirm ? (
           <Button
             variant="outline"
-            className="border-red-200 text-red-600 hover:bg-red-50"
+            className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-900/20"
             onClick={() => setShowDeleteConfirm(true)}
             disabled={isPending}
           >

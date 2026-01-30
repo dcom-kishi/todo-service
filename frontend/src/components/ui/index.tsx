@@ -15,10 +15,10 @@ export interface ButtonProps
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "default", size = "default", ...props }, ref) => {
     const variants = {
-      default: "bg-blue-600 text-white hover:bg-blue-700",
-      outline: "border border-gray-300 bg-transparent hover:bg-gray-100",
-      ghost: "hover:bg-gray-100",
-      link: "text-blue-600 underline-offset-4 hover:underline",
+      default: "bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500",
+      outline: "border border-gray-300 bg-transparent hover:bg-gray-100 dark:border-zinc-800 dark:hover:bg-zinc-900",
+      ghost: "hover:bg-gray-100 dark:hover:bg-zinc-900",
+      link: "text-blue-600 underline-offset-4 hover:underline dark:text-blue-400",
     };
     const sizes = {
       default: "h-10 px-4 py-2",
@@ -51,7 +51,7 @@ export const Input = React.forwardRef<
     <input
       type={type}
       className={cn(
-        "flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+        "flex h-10 w-full rounded-md border border-border bg-card px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors",
         className
       )}
       ref={ref}
@@ -68,7 +68,7 @@ export const Label = React.forwardRef<
   <label
     ref={ref}
     className={cn(
-      "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-opacity-70",
+      "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-opacity-70 text-gray-900 dark:text-zinc-300",
       className
     )}
     {...props}
@@ -83,7 +83,7 @@ export const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "rounded-lg border border-gray-200 bg-white text-gray-950 shadow-sm",
+      "rounded-lg border border-border bg-white dark:bg-card text-card-foreground shadow-sm transition-colors",
       className
     )}
     {...props}

@@ -29,12 +29,12 @@ export default function TaskFormModal({ task, onClose, onSubmit, isPending }: Ta
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <Card className="w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
-        <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
-          <CardTitle>{task ? "Edit Task" : "Create New Task"}</CardTitle>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+      <Card className="w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200 border-border bg-card">
+        <CardHeader className="flex flex-row items-center justify-between border-b border-border pb-4">
+          <CardTitle className="text-card-foreground">{task ? "Edit Task" : "Create New Task"}</CardTitle>
           <Button variant="ghost" size="icon" onClick={onClose} disabled={isPending}>
-            <X size={20} />
+            <X size={20} className="text-muted-foreground" />
           </Button>
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -46,6 +46,7 @@ export default function TaskFormModal({ task, onClose, onSubmit, isPending }: Ta
                 placeholder="Buy groceries"
                 {...register("title")}
                 disabled={isPending}
+                className="bg-background border-border text-foreground"
               />
               {errors.title && <p className="text-xs text-red-500">{errors.title.message}</p>}
             </div>
@@ -56,7 +57,7 @@ export default function TaskFormModal({ task, onClose, onSubmit, isPending }: Ta
                 id="description"
                 rows={3}
                 placeholder="Milk, eggs, and bread..."
-                className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-50"
+                className="flex w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-50 text-foreground placeholder:text-muted-foreground transition-colors"
                 {...register("description")}
                 disabled={isPending}
               />
@@ -67,7 +68,7 @@ export default function TaskFormModal({ task, onClose, onSubmit, isPending }: Ta
               <Label htmlFor="status">Status</Label>
               <select
                 id="status"
-                className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-50"
+                className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-50 text-foreground transition-colors"
                 {...register("status")}
                 disabled={isPending}
               >
@@ -77,7 +78,7 @@ export default function TaskFormModal({ task, onClose, onSubmit, isPending }: Ta
               </select>
             </div>
           </CardContent>
-          <CardFooter className="flex justify-end gap-2 border-t pt-4">
+          <CardFooter className="flex justify-end gap-2 border-t border-border pt-4">
             <Button variant="ghost" type="button" onClick={onClose} disabled={isPending}>
               Cancel
             </Button>

@@ -52,10 +52,10 @@ export default function SignupPage() {
 
   if (success) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+      <div className="flex min-h-screen items-center justify-center bg-background px-4 transition-colors">
         <Card className="w-full max-w-md p-8 text-center">
-          <CardTitle className="mb-4 text-green-600">Account Created!</CardTitle>
-          <p className="text-gray-600">
+          <CardTitle className="mb-4 text-green-600 dark:text-green-400">Account Created!</CardTitle>
+          <p className="text-muted-foreground">
             Redirecting you to the login page in a few seconds...
           </p>
           <Link href="/login" className="mt-6 block">
@@ -69,67 +69,121 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8 transition-colors">
       <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-center text-2xl font-bold">Create an account</CardTitle>
-        </CardHeader>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                placeholder="johndoe"
-                {...register("username")}
-                disabled={isPending}
-              />
-              {errors.username && (
-                <p className="text-xs text-red-500">{errors.username.message}</p>
+
+          <CardHeader className="space-y-1">
+
+            <CardTitle className="text-center text-2xl font-bold">Create an account</CardTitle>
+
+          </CardHeader>
+
+          <form onSubmit={handleSubmit(onSubmit)}>
+
+            <CardContent className="grid gap-4">
+
+              <div className="grid gap-2">
+
+                <Label htmlFor="username">Username</Label>
+
+                <Input
+
+                  id="username"
+
+                  placeholder="johndoe"
+
+                  {...register("username")}
+
+                  disabled={isPending}
+
+                />
+
+                {errors.username && (
+
+                  <p className="text-xs text-red-500">{errors.username.message}</p>
+
+                )}
+
+              </div>
+
+              <div className="grid gap-2">
+
+                <Label htmlFor="email">Email</Label>
+
+                <Input
+
+                  id="email"
+
+                  type="email"
+
+                  placeholder="m@example.com"
+
+                  {...register("email")}
+
+                  disabled={isPending}
+
+                />
+
+                {errors.email && (
+
+                  <p className="text-xs text-red-500">{errors.email.message}</p>
+
+                )}
+
+              </div>
+
+              <div className="grid gap-2">
+
+                <Label htmlFor="password">Password</Label>
+
+                <Input
+
+                  id="password"
+
+                  type="password"
+
+                  {...register("password")}
+
+                  disabled={isPending}
+
+                />
+
+                {errors.password && (
+
+                  <p className="text-xs text-red-500">{errors.password.message}</p>
+
+                )}
+
+              </div>
+
+              {error && (
+
+                <p className="text-sm font-medium text-red-500">{error}</p>
+
               )}
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                {...register("email")}
-                disabled={isPending}
-              />
-              {errors.email && (
-                <p className="text-xs text-red-500">{errors.email.message}</p>
-              )}
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                {...register("password")}
-                disabled={isPending}
-              />
-              {errors.password && (
-                <p className="text-xs text-red-500">{errors.password.message}</p>
-              )}
-            </div>
-            {error && (
-              <p className="text-sm font-medium text-red-500">{error}</p>
-            )}
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button className="w-full" type="submit" disabled={isPending}>
-              {isPending ? "Creating account..." : "Sign up"}
-            </Button>
-            <p className="text-center text-sm text-gray-600">
-              Already have an account?{" "}
-              <Link href="/login" className="text-blue-600 hover:underline">
-                Login
-              </Link>
-            </p>
-          </CardFooter>
-        </form>
-      </Card>
-    </div>
-  );
-}
+
+            </CardContent>
+
+            <CardFooter className="flex flex-col gap-4">
+              <Button className="w-full" type="submit" disabled={isPending}>
+                {isPending ? "Creating account..." : "Sign up"}
+              </Button>
+              <p className="text-center text-sm text-muted-foreground">
+                Already have an account?{" "}
+                <Link href="/login" className="text-blue-600 dark:text-blue-400 hover:underline">
+                  Login
+                </Link>
+              </p>
+            </CardFooter>
+
+          </form>
+
+        </Card>
+
+      </div>
+
+    );
+
+  }
+
+  

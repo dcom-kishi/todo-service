@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import {
   DndContext,
   DragOverlay,
@@ -17,7 +16,6 @@ import {
 } from "@dnd-kit/core";
 import {
   arrayMove,
-  SortableContext,
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
 import { Task, TaskStatus, TaskFormValues } from "@/schemas/task";
@@ -117,7 +115,6 @@ export default function KanbanBoard() {
     if (!over) return;
 
     const activeId = active.id;
-    const overId = over.id;
 
     const task = tasks.find((t) => t.id === activeId);
     if (!task) return;
@@ -188,7 +185,7 @@ export default function KanbanBoard() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Task Board</h2>
+        <h2 className="text-2xl font-bold text-foreground">Task Board</h2>
         <Button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2">
           <Plus size={18} />
           Add Task
