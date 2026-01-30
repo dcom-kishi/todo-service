@@ -25,11 +25,11 @@ export default function KanbanColumn({
   });
 
   return (
-    <div className="flex flex-col w-full min-w-[300px] bg-gray-100 rounded-lg p-4 h-full min-h-[500px]">
+    <div className="flex flex-col w-full min-w-[300px] bg-muted rounded-lg p-4 h-full min-h-[500px] transition-colors">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-bold text-gray-700 flex items-center gap-2">
+        <h3 className="font-bold text-foreground/80 flex items-center gap-2">
           {title}
-          <span className="bg-gray-200 text-gray-500 text-xs px-2 py-0.5 rounded-full">
+          <span className="bg-background text-muted-foreground text-xs px-2 py-0.5 rounded-full border border-border/50">
             {tasks.length}
           </span>
         </h3>
